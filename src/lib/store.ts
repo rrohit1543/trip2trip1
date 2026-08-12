@@ -11,6 +11,9 @@ import {
   RouteSearchResult,
   OtpSession,
   SecurityEvent,
+  CommissionRule,
+  PaymentSplitLedger,
+  SupportTicket,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -21,19 +24,25 @@ import {
   INITIAL_REVIEWS,
   INITIAL_CHAT,
   INITIAL_SECURITY_LOGS,
+  INITIAL_COMMISSION_RULES,
+  INITIAL_PAYMENT_SPLIT_LEDGER,
+  INITIAL_SUPPORT_TICKETS,
 } from './mockData';
 import { hashPassword, generateOTP, checkRateLimit, createSecurityLog, isValidEmail, isValidMobile } from './security';
 
 const STORAGE_KEYS = {
-  CURRENT_USER: 'trip2trip_v4_red_current_user',
-  USERS: 'trip2trip_v4_red_users',
-  KYC: 'trip2trip_v4_red_kyc',
-  TRIPS: 'trip2trip_v4_red_trips',
-  TELEMETRY: 'trip2trip_v4_red_telemetry',
-  BOOKINGS: 'trip2trip_v4_red_bookings',
-  REVIEWS: 'trip2trip_v4_red_reviews',
-  CHAT: 'trip2trip_v4_red_chat',
-  SECURITY_LOGS: 'trip2trip_v4_red_security_logs',
+  CURRENT_USER: 'trip2trip_v5_marketplace_current_user',
+  USERS: 'trip2trip_v5_marketplace_users',
+  KYC: 'trip2trip_v5_marketplace_kyc',
+  TRIPS: 'trip2trip_v5_marketplace_trips',
+  TELEMETRY: 'trip2trip_v5_marketplace_telemetry',
+  BOOKINGS: 'trip2trip_v5_marketplace_bookings',
+  REVIEWS: 'trip2trip_v5_marketplace_reviews',
+  CHAT: 'trip2trip_v5_marketplace_chat',
+  SECURITY_LOGS: 'trip2trip_v5_marketplace_security_logs',
+  COMMISSION_RULES: 'trip2trip_v5_marketplace_commission_rules',
+  PAYMENT_SPLITS: 'trip2trip_v5_marketplace_payment_splits',
+  SUPPORT_TICKETS: 'trip2trip_v5_marketplace_support_tickets',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -59,500 +68,500 @@ export function useTrip2TripStore() {
   const [currentUser, setCurrentUser] = useState<User | null>(() =>
     getStored<User | null>(STORAGE_KEYS.CURRENT_USER, INITIAL_USERS[0])
   );
-
   const [users, setUsers] = useState<User[]>(() =>
     getStored<User[]>(STORAGE_KEYS.USERS, INITIAL_USERS)
   );
-
   const [operatorKYC, setOperatorKYC] = useState<OperatorKYC[]>(() =>
     getStored<OperatorKYC[]>(STORAGE_KEYS.KYC, INITIAL_OPERATOR_KYC)
   );
-
   const [trips, setTrips] = useState<Trip[]>(() =>
     getStored<Trip[]>(STORAGE_KEYS.TRIPS, INITIAL_TRIPS)
   );
-
   const [telemetry, setTelemetry] = useState<Record<string, LiveTelemetry>>(() =>
     getStored<Record<string, LiveTelemetry>>(STORAGE_KEYS.TELEMETRY, INITIAL_TELEMETRY)
   );
-
   const [bookings, setBookings] = useState<Booking[]>(() =>
     getStored<Booking[]>(STORAGE_KEYS.BOOKINGS, INITIAL_BOOKINGS)
   );
-
   const [reviews, setReviews] = useState<Review[]>(() =>
     getStored<Review[]>(STORAGE_KEYS.REVIEWS, INITIAL_REVIEWS)
   );
-
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() =>
     getStored<ChatMessage[]>(STORAGE_KEYS.CHAT, INITIAL_CHAT)
   );
-
   const [securityLogs, setSecurityLogs] = useState<SecurityEvent[]>(() =>
     getStored<SecurityEvent[]>(STORAGE_KEYS.SECURITY_LOGS, INITIAL_SECURITY_LOGS)
   );
 
-  // In-memory OTP sessions
+  // MARKETPLACE MODULES: Commission Engine, Payment Split Ledger & Support Desk
+  const [commissionRules, setCommissionRules] = useState<CommissionRule[]>(() =>
+    getStored<CommissionRule[]>(STORAGE_KEYS.COMMISSION_RULES, INITIAL_COMMISSION_RULES)
+  );
+  const [paymentSplits, setPaymentSplits] = useState<PaymentSplitLedger[]>(() =>
+    getStored<PaymentSplitLedger[]>(STORAGE_KEYS.PAYMENT_SPLITS, INITIAL_PAYMENT_SPLIT_LEDGER)
+  );
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() =>
+    getStored<SupportTicket[]>(STORAGE_KEYS.SUPPORT_TICKETS, INITIAL_SUPPORT_TICKETS)
+  );
+
   const [otpSessions, setOtpSessions] = useState<Record<string, OtpSession>>({});
 
-  // LocalStorage Sync
-  useEffect(() => { setStored(STORAGE_KEYS.CURRENT_USER, currentUser); }, [currentUser]);
-  useEffect(() => { setStored(STORAGE_KEYS.USERS, users); }, [users]);
-  useEffect(() => { setStored(STORAGE_KEYS.KYC, operatorKYC); }, [operatorKYC]);
-  useEffect(() => { setStored(STORAGE_KEYS.TRIPS, trips); }, [trips]);
-  useEffect(() => { setStored(STORAGE_KEYS.TELEMETRY, telemetry); }, [telemetry]);
-  useEffect(() => { setStored(STORAGE_KEYS.BOOKINGS, bookings); }, [bookings]);
-  useEffect(() => { setStored(STORAGE_KEYS.REVIEWS, reviews); }, [reviews]);
-  useEffect(() => { setStored(STORAGE_KEYS.CHAT, chatMessages); }, [chatMessages]);
-  useEffect(() => { setStored(STORAGE_KEYS.SECURITY_LOGS, securityLogs); }, [securityLogs]);
+  // Sync to localStorage
+  useEffect(() => setStored(STORAGE_KEYS.CURRENT_USER, currentUser), [currentUser]);
+  useEffect(() => setStored(STORAGE_KEYS.USERS, users), [users]);
+  useEffect(() => setStored(STORAGE_KEYS.KYC, operatorKYC), [operatorKYC]);
+  useEffect(() => setStored(STORAGE_KEYS.TRIPS, trips), [trips]);
+  useEffect(() => setStored(STORAGE_KEYS.TELEMETRY, telemetry), [telemetry]);
+  useEffect(() => setStored(STORAGE_KEYS.BOOKINGS, bookings), [bookings]);
+  useEffect(() => setStored(STORAGE_KEYS.REVIEWS, reviews), [reviews]);
+  useEffect(() => setStored(STORAGE_KEYS.CHAT, chatMessages), [chatMessages]);
+  useEffect(() => setStored(STORAGE_KEYS.SECURITY_LOGS, securityLogs), [securityLogs]);
+  useEffect(() => setStored(STORAGE_KEYS.COMMISSION_RULES, commissionRules), [commissionRules]);
+  useEffect(() => setStored(STORAGE_KEYS.PAYMENT_SPLITS, paymentSplits), [paymentSplits]);
+  useEffect(() => setStored(STORAGE_KEYS.SUPPORT_TICKETS, supportTickets), [supportTickets]);
 
-  // Real-time GPS movement simulation
+  // Real-time GPS Simulation Ticker
   useEffect(() => {
     const interval = setInterval(() => {
       setTelemetry((prev) => {
-        const next = { ...prev };
-        let updated = false;
-
-        trips.forEach((trip) => {
-          if (trip.status === 'live' && trip.routePath.length >= 2) {
-            const currentTelem = next[trip.id] || {
-              tripId: trip.id,
-              currentLat: trip.routePath[0][0],
-              currentLng: trip.routePath[0][1],
-              currentSpeed: 60,
-              heading: 0,
-              currentStopIndex: 0,
-              currentStopName: trip.departureCity,
-              nextStopName: trip.dropPoints[0]?.name || trip.destinationCity,
-              etaNextStop: '30 mins',
-              etaDestination: '4 hours',
-              lastUpdated: 'Just now',
-              progressPercent: 10,
-            };
-
-            let newProgress = (currentTelem.progressPercent + 0.5) % 100;
-            const routeIndex = Math.min(
-              Math.floor((newProgress / 100) * (trip.routePath.length - 1)),
-              trip.routePath.length - 2
-            );
-
-            const startCoord = trip.routePath[routeIndex];
-            const endCoord = trip.routePath[routeIndex + 1];
-            const segmentProgress = ((newProgress / 100) * (trip.routePath.length - 1)) - routeIndex;
-
-            const currentLat = startCoord[0] + (endCoord[0] - startCoord[0]) * segmentProgress;
-            const currentLng = startCoord[1] + (endCoord[1] - startCoord[1]) * segmentProgress;
-            const currentSpeed = 55 + Math.floor(Math.sin(Date.now() / 3000) * 15);
-
-            const stopCount = trip.dropPoints.length;
-            const currentStopIdx = Math.min(Math.floor((newProgress / 100) * stopCount), stopCount - 1);
-            const nextStopObj = trip.dropPoints[currentStopIdx] || { name: trip.destinationCity };
-
-            next[trip.id] = {
-              ...currentTelem,
-              currentLat,
-              currentLng,
-              currentSpeed,
-              currentStopName: currentStopIdx > 0 ? trip.dropPoints[currentStopIdx - 1]?.name : trip.departureCity,
-              nextStopName: nextStopObj.name,
-              progressPercent: parseFloat(newProgress.toFixed(1)),
-              lastUpdated: 'Live GPS',
-            };
-            updated = true;
+        const nextState: Record<string, LiveTelemetry> = { ...prev };
+        Object.keys(nextState).forEach((tripId) => {
+          const trip = trips.find((t) => t.id === tripId);
+          if (trip && trip.status === 'live') {
+            const current = nextState[tripId];
+            if (current) {
+              const deltaLat = (Math.random() - 0.48) * 0.002;
+              const deltaLng = (Math.random() - 0.48) * 0.002;
+              nextState[tripId] = {
+                ...current,
+                currentLat: +(current.currentLat + deltaLat).toFixed(4),
+                currentLng: +(current.currentLng + deltaLng).toFixed(4),
+                speedKmH: Math.floor(45 + Math.random() * 20),
+                lastUpdatedIso: new Date().toISOString(),
+              };
+            }
           }
         });
-
-        return updated ? next : prev;
+        return nextState;
       });
-    }, 2500);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [trips]);
 
-  // Helper to log security events
   const addSecurityLog = (eventType: SecurityEvent['eventType'], identifier: string, details: string) => {
     const log = createSecurityLog(eventType, identifier, details);
     setSecurityLogs((prev) => [log, ...prev]);
   };
 
-  // -------------------------------------------------------------
-  // USER REGISTRATION WITH MOBILE OR GMAIL/EMAIL OTP
-  // -------------------------------------------------------------
-  const registerUser = (
-    name: string,
-    identifier: string, // mobile or email
-    password: string,
-    role: UserRole
-  ): { success: boolean; message: string; otpCode?: string } => {
-    const cleanId = identifier.trim().toLowerCase();
-
-    const isEmail = isValidEmail(cleanId);
-    const isMobile = isValidMobile(cleanId);
-
-    if (!isEmail && !isMobile) {
-      return { success: false, message: 'Please enter a valid Mobile Number (10 digits) or Email Address.' };
+  // 1. COMMISSION ENGINE MATH
+  const getApplicableCommissionRate = (operatorId: string, tripId?: string): number => {
+    // Package specific override
+    if (tripId) {
+      const pkgRule = commissionRules.find((r) => r.level === 'package' && r.targetId === tripId);
+      if (pkgRule) return pkgRule.commissionPercentage;
     }
+    // Agency specific override
+    const agencyRule = commissionRules.find((r) => r.level === 'agency' && r.targetId === operatorId);
+    if (agencyRule) return agencyRule.commissionPercentage;
 
-    // Rate Limit Check
-    const rateCheck = checkRateLimit(`reg_${cleanId}`, 5, 300000);
-    if (!rateCheck.allowed) {
-      return { success: false, message: `Too many registration attempts. Please retry in ${rateCheck.retryAfterSec} seconds.` };
-    }
+    // Global default
+    const globalRule = commissionRules.find((r) => r.level === 'global');
+    return globalRule ? globalRule.commissionPercentage : 10;
+  };
 
-    // Check if user exists
-    const existing = users.find((u) => u.authIdentifier.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId || u.phone === cleanId);
-    if (existing && existing.isVerified) {
-      return { success: false, message: 'An account with this Mobile Number or Email already exists. Please log in.' };
-    }
-
-    // Generate 6-digit OTP
-    const code = generateOTP();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
-
-    const newOtpSession: OtpSession = {
-      id: `otp_${Date.now()}`,
-      target: cleanId,
-      code,
-      expiresAt,
-      attempts: 0,
-      maxAttempts: 3,
-      isUsed: false,
-      type: 'registration',
+  const updateCommissionRule = (rule: Omit<CommissionRule, 'id' | 'updatedAt' | 'updatedBy'>) => {
+    const newRule: CommissionRule = {
+      ...rule,
+      id: `rule_${Date.now()}`,
+      updatedAt: new Date().toISOString(),
+      updatedBy: currentUser ? currentUser.name : 'Super Admin',
     };
 
-    setOtpSessions((prev) => ({ ...prev, [cleanId]: newOtpSession }));
-
-    // Create or update unverified user
-    const newUser: User = {
-      id: existing ? existing.id : `usr_${Date.now()}`,
-      name,
-      email: isEmail ? cleanId : `${cleanId.replace(/[^0-9]/g, '')}@mobile.trip2trip.com`,
-      phone: isMobile ? cleanId : '+91 99000 00000',
-      authIdentifier: cleanId,
-      authMethod: isMobile ? 'mobile' : 'email',
-      passwordHash: hashPassword(password),
-      role,
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      isVerified: false,
-    };
-
-    setUsers((prev) => {
-      const filtered = prev.filter((u) => u.authIdentifier.toLowerCase() !== cleanId);
-      return [...filtered, newUser];
+    setCommissionRules((prev) => {
+      const filtered = prev.filter((r) => !(r.level === rule.level && r.targetId === rule.targetId));
+      return [newRule, ...filtered];
     });
 
-    addSecurityLog('OTP_SENT', cleanId, `Sent registration OTP for ${role} account`);
-    return { success: true, message: `OTP sent to ${cleanId}. (Verification Code: ${code})`, otpCode: code };
+    addSecurityLog(
+      'COMMISSION_RULE_UPDATED',
+      rule.targetId || 'GLOBAL',
+      `Commission rate for ${rule.level} updated to ${rule.commissionPercentage}%`
+    );
   };
 
-  // -------------------------------------------------------------
-  // VERIFY OTP FOR ACCOUNT ACTIVATION
-  // -------------------------------------------------------------
-  const verifyRegistrationOTP = (identifier: string, enteredCode: string): { success: boolean; message: string; user?: User } => {
-    const cleanId = identifier.trim().toLowerCase();
-    const session = otpSessions[cleanId];
-
-    if (!session || session.type !== 'registration' || session.isUsed) {
-      addSecurityLog('OTP_FAILED', cleanId, 'Invalid or non-existent OTP session');
-      return { success: false, message: 'OTP session expired or invalid. Please request a new code.' };
-    }
-
-    if (Date.now() > session.expiresAt) {
-      addSecurityLog('OTP_FAILED', cleanId, 'Expired OTP code entered');
-      return { success: false, message: 'OTP has expired (5 minute limit). Please request a new code.' };
-    }
-
-    if (session.attempts >= session.maxAttempts) {
-      addSecurityLog('OTP_FAILED', cleanId, 'Maximum OTP verification attempts exceeded');
-      return { success: false, message: 'Maximum verification attempts exceeded. Please request a new OTP.' };
-    }
-
-    if (session.code !== enteredCode.trim()) {
-      session.attempts += 1;
-      addSecurityLog('OTP_FAILED', cleanId, `Incorrect OTP attempt (${session.attempts}/${session.maxAttempts})`);
-      return {
-        success: false,
-        message: `Incorrect verification code. ${session.maxAttempts - session.attempts} attempt(s) remaining.`,
-      };
-    }
-
-    // Mark OTP as used
-    session.isUsed = true;
-
-    // Activate Account
-    let activatedUser: User | undefined;
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.authIdentifier.toLowerCase() === cleanId) {
-          activatedUser = { ...u, isVerified: true };
-          return activatedUser;
-        }
-        return u;
-      })
-    );
-
-    if (activatedUser) {
-      setCurrentUser(activatedUser);
-      addSecurityLog('OTP_VERIFIED', cleanId, 'Account verified and activated successfully');
-      return { success: true, message: 'Account verified successfully! Welcome to trip2trip.', user: activatedUser };
-    }
-
-    return { success: false, message: 'User account not found.' };
-  };
-
-  // -------------------------------------------------------------
-  // OWASP FORGOT PASSWORD (Generic response, OTP, Session Invalidation)
-  // -------------------------------------------------------------
-  const requestPasswordReset = (identifier: string): { success: boolean; message: string; otpCode?: string } => {
-    const cleanId = identifier.trim().toLowerCase();
-
-    // OWASP recommendation: Do NOT reveal whether email/mobile exists. Always show generic success message!
-    const genericMessage = `If an account matches ${cleanId}, a secure single-use OTP has been sent.`;
-
-    const user = users.find(
-      (u) => u.authIdentifier.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId || u.phone === cleanId
-    );
-
-    if (!user) {
-      addSecurityLog('PASSWORD_RESET_REQUESTED', cleanId, 'Password reset requested for non-existent target');
-      return { success: true, message: genericMessage }; // Always generic!
-    }
-
-    // Rate Limit Check
-    const rateCheck = checkRateLimit(`reset_${cleanId}`, 3, 300000);
-    if (!rateCheck.allowed) {
-      return { success: false, message: `Too many reset requests. Please retry after ${rateCheck.retryAfterSec} seconds.` };
-    }
-
-    // Generate Single-Use 6-digit OTP
-    const code = generateOTP();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
-
-    const newOtpSession: OtpSession = {
-      id: `reset_${Date.now()}`,
-      target: cleanId,
-      code,
-      expiresAt,
-      attempts: 0,
-      maxAttempts: 3,
-      isUsed: false,
-      type: 'password_reset',
+  // 2. AUTOMATED PAYMENT SPLIT ENGINE
+  const createBooking = (bookingData: Omit<Booking, 'id' | 'bookingDate' | 'qrCodeData'>) => {
+    const bookingId = `bk_${Date.now().toString().slice(-6)}`;
+    const newBooking: Booking = {
+      ...bookingData,
+      id: bookingId,
+      bookingDate: new Date().toISOString(),
+      qrCodeData: `T2T-${bookingId}-${bookingData.customerName.toUpperCase()}`,
     };
 
-    setOtpSessions((prev) => ({ ...prev, [cleanId]: newOtpSession }));
-    addSecurityLog('PASSWORD_RESET_REQUESTED', cleanId, 'Password reset OTP generated');
+    const targetTrip = trips.find((t) => t.id === bookingData.tripId);
+    const operatorId = targetTrip ? targetTrip.operatorId : 'usr_operator_1';
 
-    return { success: true, message: `${genericMessage} (Demo OTP Code: ${code})`, otpCode: code };
-  };
+    // Calculate Split Settlement Math
+    const commissionPct = getApplicableCommissionRate(operatorId, bookingData.tripId);
+    const gross = bookingData.totalAmount;
+    const commissionAmt = Math.round((gross * commissionPct) / 100);
+    const gstOnCommission = Math.round(commissionAmt * 0.18);
+    const tdsAmt = Math.round(gross * 0.01);
+    const netSettlement = Math.max(0, gross - commissionAmt - gstOnCommission - tdsAmt);
 
-  const resetPasswordWithOTP = (
-    identifier: string,
-    enteredCode: string,
-    newPassword: string
-  ): { success: boolean; message: string } => {
-    const cleanId = identifier.trim().toLowerCase();
-    const session = otpSessions[cleanId];
+    const newSplit: PaymentSplitLedger = {
+      id: `split_${bookingId}`,
+      bookingId,
+      tripId: bookingData.tripId,
+      tripName: bookingData.tripName,
+      operatorId,
+      operatorName: bookingData.operatorName,
+      customerId: bookingData.customerId,
+      customerName: bookingData.customerName,
+      grossAmount: gross,
+      platformCommissionPercentage: commissionPct,
+      platformCommissionAmount: commissionAmt,
+      gstOnCommissionAmount: gstOnCommission,
+      tdsAmount: tdsAmt,
+      agencyNetSettlementAmount: netSettlement,
+      settlementStatus: 'settled',
+      settlementSchedule: 'T+1',
+      nodalEscrowTransactionId: `NODAL_TXN_${Date.now()}`,
+      pennyDropVerified: true,
+      createdAt: new Date().toISOString(),
+      settledAt: new Date().toISOString(),
+    };
 
-    if (!session || session.type !== 'password_reset' || session.isUsed) {
-      return { success: false, message: 'Invalid or expired reset session. Please request a new OTP.' };
-    }
+    setBookings((prev) => [newBooking, ...prev]);
+    setPaymentSplits((prev) => [newSplit, ...prev]);
 
-    if (Date.now() > session.expiresAt) {
-      return { success: false, message: 'OTP has expired (5 minute limit). Please request a new reset code.' };
-    }
-
-    if (session.attempts >= session.maxAttempts) {
-      return { success: false, message: 'Maximum verification attempts exceeded. Please request a new OTP.' };
-    }
-
-    if (session.code !== enteredCode.trim()) {
-      session.attempts += 1;
-      addSecurityLog('OTP_FAILED', cleanId, `Incorrect password reset OTP attempt (${session.attempts}/${session.maxAttempts})`);
-      return { success: false, message: `Incorrect OTP. ${session.maxAttempts - session.attempts} attempt(s) remaining.` };
-    }
-
-    if (newPassword.length < 6) {
-      return { success: false, message: 'Password must be at least 6 characters long.' };
-    }
-
-    // Invalidate OTP immediately after use (OWASP recommendation)
-    session.isUsed = true;
-
-    // Update Password & Invalidate Existing User Session
-    const hashed = hashPassword(newPassword);
-
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.authIdentifier.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId || u.phone === cleanId) {
-          return { ...u, passwordHash: hashed };
+    // Update Seat Inventory
+    setTrips((prev) =>
+      prev.map((t) => {
+        if (t.id === bookingData.tripId) {
+          const updatedBooked = Array.from(new Set([...t.bookedSeatNumbers, ...bookingData.selectedSeats]));
+          return {
+            ...t,
+            bookedSeatNumbers: updatedBooked,
+            availableSeats: Math.max(0, t.totalSeats - updatedBooked.length),
+          };
         }
-        return u;
+        return t;
       })
     );
 
-    // OWASP rule: Invalidate current user session if it matches reset target
-    if (currentUser && (currentUser.authIdentifier.toLowerCase() === cleanId || currentUser.email.toLowerCase() === cleanId)) {
+    return newBooking;
+  };
+
+  // 3. CUSTOMER SUPPORT DESK & AUTOMATED REFUNDS
+  const createSupportTicket = (ticketData: Omit<SupportTicket, 'id' | 'status' | 'messages' | 'createdAt' | 'updatedAt'>) => {
+    const newTicket: SupportTicket = {
+      ...ticketData,
+      id: `tkt_${Date.now().toString().slice(-4)}`,
+      status: 'open',
+      messages: [
+        {
+          id: `msg_${Date.now()}`,
+          senderId: ticketData.customerId,
+          senderName: ticketData.customerName,
+          senderRole: 'customer',
+          message: ticketData.subject,
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSupportTickets((prev) => [newTicket, ...prev]);
+    return newTicket;
+  };
+
+  const addTicketMessage = (ticketId: string, messageText: string) => {
+    if (!currentUser) return;
+    setSupportTickets((prev) =>
+      prev.map((tkt) => {
+        if (tkt.id === ticketId) {
+          const newMsg = {
+            id: `msg_${Date.now()}`,
+            senderId: currentUser.id,
+            senderName: currentUser.name,
+            senderRole: currentUser.role,
+            message: messageText,
+            timestamp: new Date().toISOString(),
+          };
+          return {
+            ...tkt,
+            messages: [...tkt.messages, newMsg],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return tkt;
+      })
+    );
+  };
+
+  const updateTicketStatus = (ticketId: string, status: SupportTicket['status']) => {
+    setSupportTickets((prev) =>
+      prev.map((tkt) => (tkt.id === ticketId ? { ...tkt, status, updatedAt: new Date().toISOString() } : tkt))
+    );
+  };
+
+  const processTicketRefund = (ticketId: string, refundAmount: number) => {
+    const targetTicket = supportTickets.find((t) => t.id === ticketId);
+    if (!targetTicket || !targetTicket.bookingId) return;
+
+    // Update Booking status
+    setBookings((prev) =>
+      prev.map((b) => (b.id === targetTicket.bookingId ? { ...b, paymentStatus: 'refunded' } : b))
+    );
+
+    // Reverse Payment Split Ledger
+    setPaymentSplits((prev) =>
+      prev.map((s) =>
+        s.bookingId === targetTicket.bookingId ? { ...s, settlementStatus: 'refunded' } : s
+      )
+    );
+
+    // Update Support Ticket status
+    setSupportTickets((prev) =>
+      prev.map((tkt) =>
+        tkt.id === ticketId
+          ? {
+              ...tkt,
+              status: 'resolved',
+              refundStatus: 'processed',
+              refundAmount,
+              updatedAt: new Date().toISOString(),
+            }
+          : tkt
+      )
+    );
+
+    addSecurityLog(
+      'SUPPORT_REFUND_PROCESSED',
+      targetTicket.customerEmail,
+      `Support Refund of ₹${refundAmount} processed for Booking #${targetTicket.bookingId}`
+    );
+  };
+
+  // 4. AUTHENTICATION HANDLERS
+  const registerUser = (name: string, identifier: string, password: string, role: UserRole) => {
+    if (!checkRateLimit(`reg_${identifier}`, 5).allowed) {
+      return { success: false, message: 'Too many registration attempts. Please wait 15 minutes.' };
+    }
+
+    const existing = users.find((u) => u.email === identifier || u.phone === identifier);
+    if (existing) {
+      return { success: false, message: 'An account with this mobile number or email address already exists.' };
+    }
+
+    const isEmail = isValidEmail(identifier);
+    const authMethod = isEmail ? 'email' : 'mobile';
+
+    const newUser: User = {
+      id: `usr_${Date.now()}`,
+      name,
+      email: isEmail ? identifier : `${Date.now()}@user.trip2trip`,
+      phone: !isEmail ? identifier : '+91 99000 00000',
+      authIdentifier: identifier,
+      authMethod,
+      passwordHash: hashPassword(password),
+      role,
+      isVerified: false,
+      avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80`,
+    };
+
+    setUsers((prev) => [...prev, newUser]);
+
+    const code = generateOTP();
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: {
+        identifier,
+        otpCode: code,
+        expiresAt: Date.now() + 300000,
+        attempts: 0,
+        isUsed: false,
+      },
+    }));
+
+    addSecurityLog('OTP_SENT', identifier, `Registration 6-digit OTP code dispatched to ${identifier}`);
+    return { success: true, message: `OTP code sent to ${identifier}.`, otpCode: code };
+  };
+
+  const verifyRegistrationOTP = (identifier: string, code: string) => {
+    const session = otpSessions[identifier];
+    if (!session || session.isUsed || Date.now() > session.expiresAt) {
+      return { success: false, message: 'OTP is invalid or expired. Please request a new OTP.' };
+    }
+
+    if (session.attempts >= 3) {
+      return { success: false, message: 'Maximum OTP verification attempts exceeded.' };
+    }
+
+    if (session.otpCode !== code) {
+      setOtpSessions((prev) => ({
+        ...prev,
+        [identifier]: { ...session, attempts: session.attempts + 1 },
+      }));
+      return { success: false, message: `Invalid OTP. Attempts left: ${2 - session.attempts}` };
+    }
+
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: { ...session, isUsed: true },
+    }));
+
+    setUsers((prev) =>
+      prev.map((u) => (u.authIdentifier === identifier ? { ...u, isVerified: true } : u))
+    );
+
+    const verifiedUser = users.find((u) => u.authIdentifier === identifier);
+    if (verifiedUser) {
+      setCurrentUser({ ...verifiedUser, isVerified: true });
+    }
+
+    addSecurityLog('OTP_VERIFIED', identifier, 'User account verified via 6-digit OTP');
+    return { success: true, message: 'Account verified successfully!' };
+  };
+
+  const requestPasswordReset = (identifier: string) => {
+    const code = generateOTP();
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: {
+        identifier,
+        otpCode: code,
+        expiresAt: Date.now() + 300000,
+        attempts: 0,
+        isUsed: false,
+      },
+    }));
+
+    addSecurityLog('PASSWORD_RESET_REQUEST', identifier, `Generic OWASP Password Reset requested for ${identifier}`);
+    return {
+      success: true,
+      message: 'If the provided contact exists, a single-use 5-minute reset OTP has been sent.',
+      otpCode: code,
+    };
+  };
+
+  const resetPasswordWithOTP = (identifier: string, code: string, newPassword: string) => {
+    const session = otpSessions[identifier];
+    if (!session || session.isUsed || Date.now() > session.expiresAt) {
+      return { success: false, message: 'Reset OTP is invalid or expired.' };
+    }
+
+    if (session.otpCode !== code) {
+      return { success: false, message: 'Invalid Reset OTP code.' };
+    }
+
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: { ...session, isUsed: true },
+    }));
+
+    const newHash = hashPassword(newPassword);
+    setUsers((prev) =>
+      prev.map((u) => (u.authIdentifier === identifier ? { ...u, passwordHash: newHash } : u))
+    );
+
+    if (currentUser && currentUser.authIdentifier === identifier) {
       setCurrentUser(null);
     }
 
-    addSecurityLog('PASSWORD_RESET_SUCCESS', cleanId, 'Password reset completed successfully. User sessions invalidated.');
-    return { success: true, message: 'Your password has been reset successfully! Please log in with your new password.' };
+    addSecurityLog('PASSWORD_RESET_SUCCESS', identifier, 'Password reset succeeded. Sessions invalidated.');
+    return { success: true, message: 'Password reset successfully! Active sessions invalidated. Please log in.' };
   };
 
-  // -------------------------------------------------------------
-  // CUSTOMER / OPERATOR LOGIN (Role-Based Access Control)
-  // -------------------------------------------------------------
-  const loginUser = (
-    identifier: string,
-    password: string
-  ): { success: boolean; message: string; user?: User } => {
-    const cleanId = identifier.trim().toLowerCase();
-
-    // Rate Limit Check (5 attempts per minute)
-    const rateCheck = checkRateLimit(`login_${cleanId}`, 5, 60000);
-    if (!rateCheck.allowed) {
-      addSecurityLog('LOGIN_FAILED', cleanId, 'Login rate limit exceeded');
-      return { success: false, message: `Too many failed login attempts. Account temporarily locked. Retry in ${rateCheck.retryAfterSec} seconds.` };
+  const loginUser = (identifier: string, password: string) => {
+    if (!checkRateLimit(`login_${identifier}`, 5).allowed) {
+      return { success: false, message: 'Too many failed attempts. Rate limit enforced.' };
     }
 
-    const hashed = hashPassword(password);
+    const inputHash = hashPassword(password);
+    const matched = users.find((u) => u.authIdentifier === identifier && u.passwordHash === inputHash);
 
-    const user = users.find(
-      (u) =>
-        (u.authIdentifier.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId || u.phone === cleanId) &&
-        (u.passwordHash === hashed || password === 'password123' || password === 'operator123')
+    if (!matched) {
+      addSecurityLog('LOGIN_FAILED', identifier, 'Invalid login credentials');
+      return { success: false, message: 'Invalid contact identifier or password.' };
+    }
+
+    if (matched.role === 'admin') {
+      addSecurityLog('UNAUTHORIZED_ADMIN_ATTEMPT', identifier, 'Admin attempt rejected on public login page');
+      return { success: false, message: 'Administrator accounts must log in via the dedicated Admin Portal.' };
+    }
+
+    setCurrentUser(matched);
+    addSecurityLog('LOGIN_SUCCESS', identifier, `User logged in as ${matched.role}`);
+    return { success: true, message: 'Signed in successfully!', user: matched };
+  };
+
+  const requestAdminLoginMFA = (identifier: string, password: string) => {
+    const inputHash = hashPassword(password);
+    const matched = users.find(
+      (u) => u.authIdentifier === identifier && u.passwordHash === inputHash && u.role === 'admin'
     );
 
-    if (!user) {
-      addSecurityLog('LOGIN_FAILED', cleanId, 'Invalid mobile/email or password');
-      return { success: false, message: 'Invalid credentials. Please check your Mobile/Email and Password.' };
+    if (!matched) {
+      addSecurityLog('UNAUTHORIZED_ADMIN_ATTEMPT', identifier, 'Failed Admin Portal credentials attempt');
+      return { success: false, message: 'Invalid Administrator credentials or unauthorized account.' };
     }
 
-    // RBAC check: Customers and Operators CANNOT access admin privileges
-    if (user.role === 'admin') {
-      addSecurityLog('UNAUTHORIZED_ADMIN_ATTEMPT', cleanId, 'Admin account attempted login via Customer/Operator portal');
-      return { success: false, message: 'Administrators must authenticate exclusively through the Administrator Portal.' };
-    }
+    const code = generateOTP();
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: {
+        identifier,
+        otpCode: code,
+        expiresAt: Date.now() + 300000,
+        attempts: 0,
+        isUsed: false,
+      },
+    }));
 
-    if (!user.isVerified) {
-      addSecurityLog('LOGIN_FAILED', cleanId, 'Attempted login to unverified account');
-      return { success: false, message: 'Account is unverified. Please complete OTP verification first.' };
-    }
-
-    setCurrentUser(user);
-    addSecurityLog('LOGIN_SUCCESS', cleanId, `${user.role} user logged in successfully`);
-    return { success: true, message: `Welcome back, ${user.name}!`, user };
+    addSecurityLog('ADMIN_MFA_REQUEST', identifier, 'Admin 2FA MFA code dispatched');
+    return { success: true, message: 'MFA 2FA Code dispatched to admin.', mfaRequired: true, code };
   };
 
-  // -------------------------------------------------------------
-  // DEDICATED ADMINISTRATOR LOGIN WITH MULTI-FACTOR AUTH (MFA)
-  // -------------------------------------------------------------
-  const requestAdminLoginMFA = (identifier: string, password: string): { success: boolean; message: string; mfaRequired?: boolean; code?: string } => {
-    const cleanId = identifier.trim().toLowerCase();
-
-    // Rate Limit Check
-    const rateCheck = checkRateLimit(`admin_login_${cleanId}`, 3, 60000);
-    if (!rateCheck.allowed) {
-      return { success: false, message: `Rate limit exceeded. Retry in ${rateCheck.retryAfterSec} seconds.` };
+  const verifyAdminMFA = (identifier: string, code: string) => {
+    const session = otpSessions[identifier];
+    if (!session || session.isUsed || Date.now() > session.expiresAt) {
+      return { success: false, message: 'MFA OTP is invalid or expired.' };
     }
 
-    const hashed = hashPassword(password);
-
-    const adminUser = users.find(
-      (u) =>
-        u.role === 'admin' &&
-        (u.authIdentifier.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId) &&
-        (u.passwordHash === hashed || password === 'adminPass123!')
-    );
-
-    if (!adminUser) {
-      addSecurityLog('UNAUTHORIZED_ADMIN_ATTEMPT', cleanId, 'Failed admin authentication attempt');
-      return { success: false, message: 'Invalid administrator credentials or unauthorized access.' };
+    if (session.otpCode !== code) {
+      return { success: false, message: 'Invalid MFA OTP code.' };
     }
 
-    // Generate Mandatory 2FA/MFA OTP Code
-    const mfaCode = generateOTP();
-    const expiresAt = Date.now() + 5 * 60 * 1000;
+    setOtpSessions((prev) => ({
+      ...prev,
+      [identifier]: { ...session, isUsed: true },
+    }));
 
-    const newOtpSession: OtpSession = {
-      id: `admin_mfa_${Date.now()}`,
-      target: cleanId,
-      code: mfaCode,
-      expiresAt,
-      attempts: 0,
-      maxAttempts: 3,
-      isUsed: false,
-      type: 'admin_mfa',
-    };
-
-    setOtpSessions((prev) => ({ ...prev, [cleanId]: newOtpSession }));
-    addSecurityLog('ADMIN_MFA_SENT', cleanId, 'Admin 2FA MFA OTP generated');
-
-    return {
-      success: true,
-      mfaRequired: true,
-      message: `Admin credentials verified. Enter 2FA MFA code sent to your admin email. (Demo MFA Code: ${mfaCode})`,
-      code: mfaCode,
-    };
-  };
-
-  const verifyAdminMFA = (identifier: string, enteredMfaCode: string): { success: boolean; message: string; admin?: User } => {
-    const cleanId = identifier.trim().toLowerCase();
-    const session = otpSessions[cleanId];
-
-    if (!session || session.type !== 'admin_mfa' || session.isUsed) {
-      return { success: false, message: 'Invalid or expired MFA session.' };
-    }
-
-    if (Date.now() > session.expiresAt) {
-      return { success: false, message: 'MFA OTP code expired. Please re-authenticate.' };
-    }
-
-    if (session.code !== enteredMfaCode.trim()) {
-      session.attempts += 1;
-      addSecurityLog('UNAUTHORIZED_ADMIN_ATTEMPT', cleanId, `Incorrect Admin MFA attempt (${session.attempts}/3)`);
-      return { success: false, message: 'Incorrect MFA OTP code.' };
-    }
-
-    session.isUsed = true;
-    const adminUser = users.find((u) => u.role === 'admin' && u.authIdentifier.toLowerCase() === cleanId);
-
-    if (adminUser) {
-      setCurrentUser(adminUser);
-      addSecurityLog('ADMIN_MFA_SUCCESS', cleanId, 'Admin authenticated via Multi-Factor Authentication');
-      return { success: true, message: 'Admin authentication granted.', admin: adminUser };
+    const matched = users.find((u) => u.authIdentifier === identifier && u.role === 'admin');
+    if (matched) {
+      setCurrentUser(matched);
+      addSecurityLog('ADMIN_MFA_SUCCESS', identifier, 'Super Admin authenticated with 2FA MFA');
+      return { success: true, message: 'Admin authentication granted!', user: matched };
     }
 
     return { success: false, message: 'Admin user not found.' };
   };
 
   const logoutUser = () => {
-    if (currentUser) {
-      addSecurityLog('LOGIN_SUCCESS', currentUser.authIdentifier, 'User logged out');
-    }
     setCurrentUser(null);
-  };
-
-  const switchUserRole = (role: UserRole) => {
-    const targetUser = users.find((u) => u.role === role) || {
-      id: `usr_${role}_demo`,
-      name: role === 'customer' ? 'Demo Customer' : role === 'operator' ? 'Demo Operator' : 'Super Admin',
-      email: `${role}@trip2trip.com`,
-      phone: '+91 99000 11223',
-      authIdentifier: `${role}@trip2trip.com`,
-      authMethod: 'email',
-      role,
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      isVerified: true,
-      operatorCompany: role === 'operator' ? 'Royal Expeditions' : undefined,
-    };
-    setCurrentUser(targetUser);
   };
 
   const submitKYC = (data: Omit<OperatorKYC, 'id' | 'status' | 'createdAt'>) => {
     const newKYC: OperatorKYC = {
       ...data,
       id: `kyc_${Date.now()}`,
+      pennyDropVerified: true,
+      pennyDropRecipientName: data.ownerName.toUpperCase(),
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
@@ -589,40 +598,35 @@ export function useTrip2TripStore() {
       ...tripData,
       id: `trip_${Date.now()}`,
       operatorId: currentUser ? currentUser.id : 'usr_operator_1',
-      operatorName: currentUser?.operatorCompany || currentUser?.name || 'Himalayan Yatra Expeditions',
-      operatorLogo: currentUser?.avatar || 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=200&q=80',
-      operatorRating: 4.9,
+      operatorName: currentUser?.operatorCompany || 'Verified Tour Operator',
+      operatorLogo: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=200&q=80',
+      operatorRating: 5.0,
       operatorReviewsCount: 1,
       status: 'upcoming',
       bookedSeatNumbers: [],
     };
+
     setTrips((prev) => [newTrip, ...prev]);
+    setTelemetry((prev) => ({
+      ...prev,
+      [newTrip.id]: {
+        tripId: newTrip.id,
+        currentLat: newTrip.pickupLocation.lat,
+        currentLng: newTrip.pickupLocation.lng,
+        speedKmH: 0,
+        headingDeg: 0,
+        nextCheckpointName: newTrip.pickupLocation.name,
+        etaNextCheckpoint: 'Scheduled Departure',
+        lastUpdatedIso: new Date().toISOString(),
+      },
+    }));
   };
 
   const toggleLiveTrip = (tripId: string) => {
     setTrips((prev) =>
       prev.map((t) => {
         if (t.id === tripId) {
-          const nextStatus = t.status === 'live' ? 'completed' : 'live';
-          if (nextStatus === 'live' && !telemetry[tripId]) {
-            setTelemetry((telemPrev) => ({
-              ...telemPrev,
-              [tripId]: {
-                tripId: t.id,
-                currentLat: t.routePath[0]?.[0] || 28.6139,
-                currentLng: t.routePath[0]?.[1] || 77.2090,
-                currentSpeed: 60,
-                heading: 0,
-                currentStopIndex: 0,
-                currentStopName: t.departureCity,
-                nextStopName: t.dropPoints[0]?.name || t.destinationCity,
-                etaNextStop: '25 mins',
-                etaDestination: `${t.durationDays * 6} hrs`,
-                lastUpdated: 'Just started',
-                progressPercent: 5,
-              },
-            }));
-          }
+          const nextStatus = t.status === 'live' ? 'upcoming' : 'live';
           return { ...t, status: nextStatus };
         }
         return t;
@@ -630,37 +634,9 @@ export function useTrip2TripStore() {
     );
   };
 
-  const createBooking = (bookingData: Omit<Booking, 'id' | 'bookingDate' | 'transactionId' | 'boardingStatus'>) => {
-    const newBooking: Booking = {
-      ...bookingData,
-      id: `bk_${Date.now().toString().slice(-6)}`,
-      bookingDate: new Date().toISOString(),
-      transactionId: `TXN_${bookingData.paymentMethod}_${Math.floor(100000 + Math.random() * 900000)}`,
-      boardingStatus: 'pending',
-    };
-
-    setBookings((prev) => [newBooking, ...prev]);
-
-    setTrips((prev) =>
-      prev.map((t) => {
-        if (t.id === bookingData.tripId) {
-          const updatedBooked = Array.from(new Set([...t.bookedSeatNumbers, ...bookingData.selectedSeats]));
-          return {
-            ...t,
-            bookedSeatNumbers: updatedBooked,
-            availableSeats: Math.max(0, t.totalSeats - updatedBooked.length),
-          };
-        }
-        return t;
-      })
-    );
-
-    return newBooking;
-  };
-
   const addChatMessage = (tripId: string, text: string) => {
     if (!currentUser) return;
-    const newMsg: ChatMessage = {
+    const msg: ChatMessage = {
       id: `chat_${Date.now()}`,
       tripId,
       senderId: currentUser.id,
@@ -669,69 +645,40 @@ export function useTrip2TripStore() {
       text,
       timestamp: new Date().toISOString(),
     };
-    setChatMessages((prev) => [...prev, newMsg]);
-
-    if (currentUser.role === 'customer') {
-      setTimeout(() => {
-        const autoReply: ChatMessage = {
-          id: `chat_${Date.now() + 1}`,
-          tripId,
-          senderId: 'usr_operator_1',
-          senderName: 'Trip Captain / Operator Support',
-          senderRole: 'operator',
-          text: `Hi ${currentUser.name}! Thank you for contacting trip2trip operator support. We are tracking your bus live!`,
-          timestamp: new Date().toISOString(),
-        };
-        setChatMessages((prevMsg) => [...prevMsg, autoReply]);
-      }, 1200);
-    }
+    setChatMessages((prev) => [...prev, msg]);
   };
 
   const addReview = (reviewData: Omit<Review, 'id' | 'createdAt'>) => {
-    const newRev: Review = {
+    const rev: Review = {
       ...reviewData,
       id: `rev_${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
-    setReviews((prev) => [newRev, ...prev]);
+    setReviews((prev) => [rev, ...prev]);
   };
 
-  const searchRoute = (dep: string, dest: string, category?: string): RouteSearchResult => {
-    const depClean = dep.trim().toLowerCase();
-    const destClean = dest.trim().toLowerCase();
+  const searchRoute = (departure: string, destination: string, category: string = 'All'): RouteSearchResult => {
+    const depLower = departure.toLowerCase().trim();
+    const destLower = destination.toLowerCase().trim();
 
-    const matching = trips.filter((t) => {
-      if (category && category !== 'All' && t.category !== category) return false;
-
-      const directMatch =
-        t.departureCity.toLowerCase().includes(depClean) &&
-        t.destinationCity.toLowerCase().includes(destClean);
-
-      const depInIntermediate = t.intermediateCities.some((c) => c.toLowerCase().includes(depClean));
-      const destInIntermediate = t.intermediateCities.some((c) => c.toLowerCase().includes(destClean));
-
-      return directMatch || (depInIntermediate && destInIntermediate) || (depInIntermediate && destClean === '') || (depClean === '' && destInIntermediate);
+    const matchingTrips = trips.filter((t) => {
+      const matchCategory = category === 'All' || t.category === category;
+      const matchDep = depLower === '' || t.departureCity.toLowerCase().includes(depLower);
+      const matchDest = destLower === '' || t.destinationCity.toLowerCase().includes(destLower);
+      return matchCategory && matchDep && matchDest;
     });
 
-    const upcomingCount = matching.filter((t) => t.status === 'upcoming').length;
-    const liveCount = matching.filter((t) => t.status === 'live').length;
-
-    const nearIntermediateCount = matching.filter(
-      (t) => t.status === 'live' && (telemetry[t.id]?.progressPercent || 0) >= 20 && (telemetry[t.id]?.progressPercent || 0) <= 75
-    ).length;
-
-    const nearDestinationCount = matching.filter(
-      (t) => t.status === 'live' && (telemetry[t.id]?.progressPercent || 0) > 75
-    ).length;
+    const liveCount = matchingTrips.filter((t) => t.status === 'live').length;
+    const upcomingCount = matchingTrips.filter((t) => t.status === 'upcoming').length;
 
     return {
-      departureCity: dep,
-      destinationCity: dest,
-      upcomingCount,
+      departureCity: departure,
+      destinationCity: destination,
+      matchingTrips,
       liveCount,
-      nearIntermediateCount,
-      nearDestinationCount,
-      matchingTrips: matching.length > 0 ? matching : trips,
+      upcomingCount,
+      nearIntermediateCount: Math.ceil(liveCount * 0.5),
+      nearDestinationCount: Math.floor(liveCount * 0.5),
     };
   };
 
@@ -745,6 +692,11 @@ export function useTrip2TripStore() {
     reviews,
     chatMessages,
     securityLogs,
+    commissionRules,
+    paymentSplits,
+    supportTickets,
+    getApplicableCommissionRate,
+    updateCommissionRule,
     registerUser,
     verifyRegistrationOTP,
     requestPasswordReset,
@@ -753,12 +705,15 @@ export function useTrip2TripStore() {
     requestAdminLoginMFA,
     verifyAdminMFA,
     logoutUser,
-    switchUserRole,
     submitKYC,
     updateKYCStatus,
     createTrip,
     toggleLiveTrip,
     createBooking,
+    createSupportTicket,
+    addTicketMessage,
+    updateTicketStatus,
+    processTicketRefund,
     addChatMessage,
     addReview,
     searchRoute,

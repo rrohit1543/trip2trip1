@@ -1,53 +1,77 @@
 @import "tailwindcss";
 
+/* Design System Tokens for Light & Dark Mode */
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --color-brand-red: #ef4444;
-  --color-brand-red-dark: #dc2626;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --brand-red: #ef4444;
+  --brand-red-dark: #dc2626;
+  --shadow-glow: rgba(239, 68, 68, 0.15);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #000000;
+  --bg-input: #0a0a0a;
+  --border-color: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --brand-red: #ef4444;
+  --brand-red-dark: #dc2626;
+  --shadow-glow: rgba(239, 68, 68, 0.25);
 }
 
 body {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Scrollbar for Black, White, Red Theme */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: #334155;
   border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #262626;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ef4444;
 }
 
-/* Leaflet Container Styling & Black-White-Red Map Tiles Filter */
+/* Leaflet Container Styling & Adaptive Map Filter */
 .leaflet-container {
-  background: #000000 !important;
+  background: var(--bg-primary) !important;
   font-family: inherit !important;
 }
 
-.leaflet-tile {
+.dark .leaflet-tile {
   filter: grayscale(100%) invert(100%) contrast(140%) hue-rotate(180deg) !important;
+}
+
+.light .leaflet-tile {
+  filter: saturate(110%) contrast(105%) !important;
 }
 
 .custom-bus-marker, .custom-fleet-marker, .custom-stop-marker {
@@ -56,13 +80,13 @@ body {
 }
 
 .leaflet-popup-content-wrapper {
-  background: #0a0a0a !important;
-  color: #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
   border: 1px solid #dc2626 !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 10px 25px -5px var(--shadow-glow) !important;
 }
 
 .leaflet-popup-tip {
-  background: #0a0a0a !important;
+  background: var(--bg-secondary) !important;
 }

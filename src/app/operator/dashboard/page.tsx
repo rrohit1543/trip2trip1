@@ -16,6 +16,7 @@ export default function OperatorDashboardPage() {
     telemetry,
     bookings,
     operatorKYC,
+    paymentSplits,
     submitKYC,
     createTrip,
     toggleLiveTrip,
@@ -26,7 +27,7 @@ export default function OperatorDashboardPage() {
   const [isCreateTripOpen, setIsCreateTripOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-sans selection:bg-red-600 selection:text-white flex flex-col transition-colors duration-200">
       <Navbar
         currentUser={currentUser}
         onOpenAuthModal={() => router.push('/login')}
@@ -45,6 +46,7 @@ export default function OperatorDashboardPage() {
           telemetry={telemetry}
           bookings={bookings}
           operatorKYC={operatorKYC}
+          paymentSplits={paymentSplits}
           onOpenCreateTrip={() => setIsCreateTripOpen(true)}
           onOpenKYC={() => setIsKYCOpen(true)}
           onToggleLiveTrip={toggleLiveTrip}

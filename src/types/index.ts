@@ -1,47 +1,86 @@
-export type UserRole = 'customer' | 'operator' | 'admin';
+export type UserRole = 'customer' | 'operator' | 'admin' | 'support_agent';
+
+export type AuthMethod = 'mobile' | 'email';
+
+export type ThemePreference = 'light' | 'dark' | 'system';
 
 export interface User {
   id: string;
   name: string;
   email: string;
   phone: string;
-  authIdentifier: string; // mobile number or email address
-  authMethod: 'mobile' | 'email';
+  authIdentifier: string;
+  authMethod: AuthMethod;
   passwordHash?: string;
   role: UserRole;
-  avatar: string;
-  isVerified: boolean;
-  mfaEnabled?: boolean;
+  avatar?: string;
   operatorCompany?: string;
+  isVerified?: boolean;
+  mfaEnabled?: boolean;
+  themePreference?: ThemePreference;
 }
 
-export interface OtpSession {
+export interface CommissionRule {
   id: string;
-  target: string; // mobile number or email address
-  code: string;
-  expiresAt: number; // timestamp in ms
-  attempts: number;
-  maxAttempts: number;
-  isUsed: boolean;
-  type: 'registration' | 'password_reset' | 'admin_mfa';
+  level: 'global' | 'agency' | 'package';
+  targetId?: string; // operatorId or tripId
+  targetName?: string;
+  commissionPercentage: number; // e.g., 10 for 10%
+  updatedAt: string;
+  updatedBy: string;
 }
 
-export interface SecurityEvent {
+export interface PaymentSplitLedger {
   id: string;
+  bookingId: string;
+  tripId: string;
+  tripName: string;
+  operatorId: string;
+  operatorName: string;
+  customerId: string;
+  customerName: string;
+  grossAmount: number;
+  platformCommissionPercentage: number;
+  platformCommissionAmount: number;
+  gstOnCommissionAmount: number; // 18% on commission
+  tdsAmount: number; // 1% TDS on Gross/Net
+  agencyNetSettlementAmount: number;
+  settlementStatus: 'pending' | 'settled' | 'refunded' | 'partially_refunded';
+  settlementSchedule: 'T+1' | 'Instant';
+  nodalEscrowTransactionId: string;
+  pennyDropVerified: boolean;
+  createdAt: string;
+  settledAt?: string;
+}
+
+export interface SupportTicketMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: UserRole;
+  message: string;
   timestamp: string;
-  eventType:
-    | 'LOGIN_SUCCESS'
-    | 'LOGIN_FAILED'
-    | 'OTP_SENT'
-    | 'OTP_VERIFIED'
-    | 'OTP_FAILED'
-    | 'PASSWORD_RESET_REQUESTED'
-    | 'PASSWORD_RESET_SUCCESS'
-    | 'ADMIN_MFA_SENT'
-    | 'ADMIN_MFA_SUCCESS'
-    | 'UNAUTHORIZED_ADMIN_ATTEMPT';
-  identifier: string;
-  details: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  bookingId?: string;
+  tripName?: string;
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  category: 'booking_inquiry' | 'cancellation_refund' | 'live_trip_issue' | 'payment_dispute' | 'general';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'open' | 'in_progress' | 'escalated' | 'resolved';
+  subject: string;
+  messages: SupportTicketMessage[];
+  refundRequested?: boolean;
+  refundAmount?: number;
+  refundStatus?: 'none' | 'requested' | 'approved' | 'processed' | 'rejected';
+  assignedAgentName?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OperatorKYC {
@@ -58,15 +97,17 @@ export interface OperatorKYC {
   bankAccount: string;
   ifscCode: string;
   upiId: string;
+  pennyDropVerified?: boolean;
+  pennyDropRecipientName?: string;
   address: string;
   emergencyContact: string;
-  logoUrl: string;
+  logoUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
   createdAt: string;
 }
 
-export interface TripLocation {
+export interface DropPoint {
   name: string;
   lat: number;
   lng: number;
@@ -80,15 +121,7 @@ export interface ItineraryDay {
   stayDetails: string;
 }
 
-export interface TourGuide {
-  name: string;
-  phone: string;
-  rating: number;
-  languages: string[];
-  photo: string;
-}
-
-export interface Vehicle {
+export interface VehicleSpecs {
   type: string;
   regNumber: string;
   amenities: string[];
@@ -103,19 +136,27 @@ export interface HotelInfo {
   images: string[];
 }
 
+export interface TourGuideInfo {
+  name: string;
+  phone: string;
+  rating: number;
+  languages: string[];
+  photo: string;
+}
+
 export interface Trip {
   id: string;
+  name: string;
+  category: 'Trekking' | 'Heritage' | 'Beach Caravan' | 'Leisure & Luxury' | 'Spiritual' | 'Adventure';
   operatorId: string;
   operatorName: string;
   operatorLogo: string;
   operatorRating: number;
   operatorReviewsCount: number;
-  name: string;
-  category: 'Trekking' | 'Heritage' | 'Beach Caravan' | 'Leisure & Luxury' | 'Spiritual' | 'Adventure';
   departureCity: string;
   destinationCity: string;
-  pickupLocation: TripLocation;
-  dropPoints: TripLocation[];
+  pickupLocation: DropPoint;
+  dropPoints: DropPoint[];
   durationDays: number;
   durationNights: number;
   departureDateTime: string;
@@ -131,12 +172,13 @@ export interface Trip {
   cancellationPolicy: string;
   requiredDocuments: string[];
   images: string[];
-  tourGuide: TourGuide;
-  vehicle: Vehicle;
+  tourGuide: TourGuideInfo;
+  vehicle: VehicleSpecs;
   hotel: HotelInfo;
+  status: 'upcoming' | 'live' | 'completed' | 'cancelled';
   difficultyLevel: 'Easy' | 'Moderate' | 'Hard';
   tags: string[];
-  status: 'upcoming' | 'live' | 'completed' | 'cancelled';
+  blackoutDates?: string[];
   routePath: [number, number][];
   intermediateCities: string[];
 }
@@ -145,15 +187,17 @@ export interface LiveTelemetry {
   tripId: string;
   currentLat: number;
   currentLng: number;
-  currentSpeed: number;
-  heading: number;
-  currentStopIndex: number;
-  currentStopName: string;
-  nextStopName: string;
-  etaNextStop: string;
-  etaDestination: string;
-  lastUpdated: string;
-  progressPercent: number;
+  speedKmH: number;
+  currentSpeed?: number;
+  headingDeg: number;
+  nextCheckpointName: string;
+  nextStopName?: string;
+  currentStopName?: string;
+  etaNextCheckpoint: string;
+  etaDestination?: string;
+  progressPercent?: number;
+  lastUpdatedIso: string;
+  emergencyAlertActive?: boolean;
 }
 
 export interface Booking {
@@ -167,13 +211,15 @@ export interface Booking {
   customerEmail: string;
   selectedSeats: number[];
   totalAmount: number;
-  bookingDate: string;
   paymentMethod: 'UPI' | 'Card' | 'NetBanking' | 'Wallet';
-  paymentStatus: 'paid' | 'pending' | 'failed';
-  transactionId: string;
+  paymentStatus: 'paid' | 'pending' | 'refunded' | 'partially_refunded';
   pickupPoint: string;
   dropPoint: string;
-  boardingStatus: 'pending' | 'boarded' | 'no-show';
+  promoCodeApplied?: string;
+  discountAmount?: number;
+  gstInvoiceNumber?: string;
+  bookingDate: string;
+  qrCodeData: string;
 }
 
 export interface Review {
@@ -203,9 +249,37 @@ export interface ChatMessage {
 export interface RouteSearchResult {
   departureCity: string;
   destinationCity: string;
-  upcomingCount: number;
+  matchingTrips: Trip[];
   liveCount: number;
+  upcomingCount: number;
   nearIntermediateCount: number;
   nearDestinationCount: number;
-  matchingTrips: Trip[];
+}
+
+export interface OtpSession {
+  identifier: string;
+  otpCode: string;
+  expiresAt: number;
+  attempts: number;
+  isUsed: boolean;
+}
+
+export interface SecurityEvent {
+  id: string;
+  timestamp: string;
+  eventType:
+    | 'LOGIN_SUCCESS'
+    | 'LOGIN_FAILED'
+    | 'OTP_SENT'
+    | 'OTP_VERIFIED'
+    | 'PASSWORD_RESET_REQUEST'
+    | 'PASSWORD_RESET_SUCCESS'
+    | 'ADMIN_MFA_REQUEST'
+    | 'ADMIN_MFA_SUCCESS'
+    | 'UNAUTHORIZED_ADMIN_ATTEMPT'
+    | 'SUPPORT_REFUND_PROCESSED'
+    | 'COMMISSION_RULE_UPDATED';
+  identifier: string;
+  details: string;
+  ipAddress?: string;
 }
