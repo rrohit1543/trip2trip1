@@ -45,8 +45,11 @@ export default function Home() {
     requestPasswordReset,
     resetPasswordWithOTP,
     loginUser,
+    loginAdminWithGoogleOAuth,
     requestAdminLoginMFA,
     verifyAdminMFA,
+    updateUserStatus,
+    updateUserRole,
     logoutUser,
     submitKYC,
     updateKYCStatus,
@@ -103,8 +106,8 @@ export default function Home() {
         {/* Navbar Header */}
         <Navbar
           currentUser={currentUser}
-          onOpenAuthModal={() => router.push('/login')}
-          onOpenAdminAuthModal={() => router.push('/admin/login')}
+          onOpenAuthModal={() => setIsAuthModalOpen(true)}
+          onOpenAdminAuthModal={() => setIsAdminAuthModalOpen(true)}
           onLogout={logoutUser}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -253,6 +256,8 @@ export default function Home() {
               supportTickets={supportTickets}
               onUpdateCommissionRule={updateCommissionRule}
               onUpdateKYCStatus={updateKYCStatus}
+              onUpdateUserStatus={updateUserStatus}
+              onUpdateUserRole={updateUserRole}
               onSelectTripToTrack={(t) => setDetailTrip(t)}
             />
           )}
@@ -278,6 +283,7 @@ export default function Home() {
         onClose={() => setIsAdminAuthModalOpen(false)}
         onRequestMFA={requestAdminLoginMFA}
         onVerifyMFA={verifyAdminMFA}
+        onGoogleAdminLogin={(gmail, name) => loginAdminWithGoogleOAuth(gmail, name, `sub_${Date.now()}`)}
       />
 
       {/* OPERATIONAL MODALS */}

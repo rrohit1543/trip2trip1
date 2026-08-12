@@ -4,6 +4,8 @@ export type AuthMethod = 'mobile' | 'email';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 
+export type AccountStatus = 'active' | 'unverified' | 'disabled';
+
 export interface User {
   id: string;
   name: string;
@@ -17,6 +19,9 @@ export interface User {
   operatorCompany?: string;
   isVerified?: boolean;
   mfaEnabled?: boolean;
+  status: AccountStatus;
+  registeredAt: string;
+  googleOAuthSub?: string;
   themePreference?: ThemePreference;
 }
 
@@ -276,6 +281,9 @@ export interface SecurityEvent {
     | 'PASSWORD_RESET_SUCCESS'
     | 'ADMIN_MFA_REQUEST'
     | 'ADMIN_MFA_SUCCESS'
+    | 'ADMIN_GOOGLE_OAUTH_SUCCESS'
+    | 'ADMIN_GOOGLE_OAUTH_REJECTED'
+    | 'USER_STATUS_UPDATED'
     | 'UNAUTHORIZED_ADMIN_ATTEMPT'
     | 'SUPPORT_REFUND_PROCESSED'
     | 'COMMISSION_RULE_UPDATED';
