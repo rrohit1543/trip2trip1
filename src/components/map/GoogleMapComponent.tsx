@@ -4,6 +4,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Trip, LiveTelemetry } from '../../types';
 import { loadGoogleMapsApi, createGoogleBusMarkerIcon } from '../../lib/googleMaps';
 import { MapPin, Radio, Bus, AlertCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const LiveTripMapInner = dynamic(() => import('./LiveTripMapInner'), { ssr: false });
+const GlobalFleetMapInner = dynamic(() => import('./GlobalFleetMapInner'), { ssr: false });
 
 interface GoogleMapComponentProps {
   trips?: Trip[];
@@ -23,6 +27,7 @@ export default function GoogleMapComponent({
   onSelectTrip,
 }: GoogleMapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [useFallbackMap, setUseFallbackMap] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const googleMapObj = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -30,6 +35,14 @@ export default function GoogleMapComponent({
 
   useEffect(() => {
     let isMounted = true;
+
+    // Listen for Google Maps auth error event (gm_authFailure)
+    const handleAuthFailure = () => {
+      console.warn('Google Maps API auth notice. Switching to Interactive OSM/Leaflet Telemetry.');
+      if (isMounted) setUseFallbackMap(true);
+    };
+
+    (window as any).gm_authFailure = handleAuthFailure;
 
     loadGoogleMapsApi()
       .then((maps) => {
@@ -66,139 +79,37 @@ export default function GoogleMapComponent({
         setMapLoaded(true);
       })
       .catch((err) => {
-        console.warn('Google Maps API load notice:', err);
+        console.warn('Google Maps API fallback triggered:', err);
+        if (isMounted) setUseFallbackMap(true);
       });
 
     return () => {
       isMounted = false;
+      delete (window as any).gm_authFailure;
     };
   }, []);
 
-  // Update Markers & Polyline on Google Map
-  useEffect(() => {
-    const win = typeof window !== 'undefined' ? (window as any) : null;
-    if (!mapLoaded || !googleMapObj.current || !win || !win.google || !win.google.maps) return;
-
-    const maps = win.google.maps;
-    const map = googleMapObj.current;
-
-    // Clear previous markers
-    markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
-
-    if (polylineRef.current) {
-      polylineRef.current.setMap(null);
-    }
-
-    const bounds = new maps.LatLngBounds();
-
-    // Single Trip Mode
+  // If Google Maps API fails or requires custom Key, render Leaflet Telemetry Map
+  if (useFallbackMap) {
     if (selectedTrip) {
-      // 1. Departure Marker
-      const depMarker = new maps.Marker({
-        position: { lat: selectedTrip.pickupLocation.lat, lng: selectedTrip.pickupLocation.lng },
-        map,
-        title: selectedTrip.departureCity,
-        icon: {
-          url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-        },
-      });
-      markersRef.current.push(depMarker);
-      bounds.extend(depMarker.getPosition());
-
-      // 2. Destination Marker
-      const destPoint = selectedTrip.dropPoints[selectedTrip.dropPoints.length - 1] || selectedTrip.pickupLocation;
-      const destMarker = new maps.Marker({
-        position: { lat: destPoint.lat, lng: destPoint.lng },
-        map,
-        title: selectedTrip.destinationCity,
-        icon: {
-          url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-        },
-      });
-      markersRef.current.push(destMarker);
-      bounds.extend(destMarker.getPosition());
-
-      // 3. Route Polyline
-      const pathCoordinates = selectedTrip.routePath.map(([lat, lng]) => ({ lat, lng }));
-      const polyline = new maps.Polyline({
-        path: pathCoordinates,
-        geodesic: true,
-        strokeColor: '#ef4444',
-        strokeOpacity: 0.9,
-        strokeWeight: 5,
-      });
-      polyline.setMap(map);
-      polylineRef.current = polyline;
-
-      // 4. Live Bus Telemetry Marker
-      if (telemetry && selectedTrip.status === 'live') {
-        const livePos = { lat: telemetry.currentLat, lng: telemetry.currentLng };
-        const busMarker = new maps.Marker({
-          position: livePos,
-          map,
-          title: `LIVE: ${selectedTrip.name}`,
-          icon: {
-            url: createGoogleBusMarkerIcon('#ef4444'),
-            scaledSize: new maps.Size(40, 40),
-          },
-        });
-
-        const infoWindow = new maps.InfoWindow({
-          content: `
-            <div style="padding: 8px; font-family: sans-serif;">
-              <strong style="color: #ef4444; font-size: 13px;">🚌 ${selectedTrip.name}</strong><br/>
-              <span style="font-size: 11px; color: #333;">Speed: <b>${telemetry.speedKmH} km/h</b></span><br/>
-              <span style="font-size: 11px; color: #666;">Next Stop: ${telemetry.nextCheckpointName}</span>
-            </div>
-          `,
-        });
-
-        busMarker.addListener('click', () => {
-          infoWindow.open(map, busMarker);
-        });
-
-        markersRef.current.push(busMarker);
-        bounds.extend(busMarker.getPosition());
-      }
-
-      map.fitBounds(bounds);
-    } else if (trips && trips.length > 0) {
-      // Multi-Trip Fleet Radar Mode
-      trips.forEach((t) => {
-        const telem = allTelemetry ? allTelemetry[t.id] : undefined;
-        const pos = telem
-          ? { lat: telem.currentLat, lng: telem.currentLng }
-          : { lat: t.pickupLocation.lat, lng: t.pickupLocation.lng };
-
-        const marker = new maps.Marker({
-          position: pos,
-          map,
-          title: t.name,
-          icon: {
-            url: createGoogleBusMarkerIcon(t.status === 'live' ? '#ef4444' : '#0f172a'),
-            scaledSize: new maps.Size(36, 36),
-          },
-        });
-
-        marker.addListener('click', () => {
-          if (onSelectTrip) onSelectTrip(t);
-        });
-
-        markersRef.current.push(marker);
-        bounds.extend(marker.getPosition());
-      });
-
-      map.fitBounds(bounds);
+      return <LiveTripMapInner trip={selectedTrip} telemetry={telemetry} height={height} />;
     }
-  }, [mapLoaded, selectedTrip, telemetry, trips, allTelemetry]);
+    return (
+      <GlobalFleetMapInner
+        trips={trips || []}
+        telemetry={allTelemetry || {}}
+        height={height}
+        onSelectTrip={onSelectTrip}
+      />
+    );
+  }
 
   return (
     <div className="relative w-full rounded-3xl overflow-hidden border-2 border-slate-200 shadow-xl bg-white" style={{ height }}>
       {/* Map Header Status Indicator */}
-      <div className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur border border-slate-200 px-3.5 py-1.5 rounded-2xl shadow-md flex items-center gap-2 text-xs font-bold text-slate-800">
+      <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur border border-slate-200 px-3.5 py-1.5 rounded-2xl shadow-md flex items-center gap-2 text-xs font-bold text-slate-800">
         <Radio className="w-4 h-4 text-red-600 animate-pulse" />
-        <span>Google Maps API Live Telemetry Enabled</span>
+        <span>Live Telemetry & GPS Route Map</span>
       </div>
 
       {/* Map Canvas Element */}

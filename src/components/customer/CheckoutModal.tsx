@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Trip, Booking } from '../../types';
-import { X, ShieldAlert, QrCode, CreditCard, Landmark, Wallet, CheckCircle2, Download, Radio, Lock } from 'lucide-react';
+import { X, ShieldAlert, QrCode, CreditCard, Landmark, Wallet, CheckCircle2, Download, Radio, Lock, Mail } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface CheckoutModalProps {
@@ -28,9 +28,9 @@ export default function CheckoutModal({
 
   const [travellerName, setTravellerName] = useState('Rahul Sharma');
   const [travellerPhone, setTravellerPhone] = useState('+91 98765 43210');
-  const [travellerEmail, setTravellerEmail] = useState('rahul.sharma@example.com');
+  const [travellerEmail, setTravellerEmail] = useState('rahul.sharma@gmail.com');
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Card' | 'NetBanking' | 'Wallet'>('UPI');
-  const [promoCode, setPromoCode] = useState('TRIP2026');
+  const [promoCode, setPromoCode] = useState('TRIPMANDI2026');
   const [isProcessing, setIsProcessing] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
 
@@ -41,6 +41,13 @@ export default function CheckoutModal({
   // Split calculation preview
   const estimatedCommission = Math.round(grandTotal * 0.1);
   const estimatedAgencyNet = grandTotal - estimatedCommission;
+
+  const handleGmailQuickLogin = () => {
+    setTravellerName('Rahul Sharma (Verified via Google)');
+    setTravellerEmail('rahul.sharma@gmail.com');
+    setTravellerPhone('+91 98765 43210');
+    alert('Logged in successfully via Gmail Account! Your details have been autofilled for booking.');
+  };
 
   const handlePayNow = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,65 +89,65 @@ export default function CheckoutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white dark:bg-black border-2 border-neutral-200 dark:border-neutral-900 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transition-colors duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-sans">
+      <div className="relative w-full max-w-2xl bg-white border-2 border-slate-200 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="p-5 bg-neutral-100 dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-900 flex items-center justify-between">
+        <div className="p-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldAlert className="w-6 h-6 text-red-500" />
+            <ShieldAlert className="w-6 h-6 text-red-600" />
             <div>
-              <h3 className="text-lg font-black text-neutral-900 dark:text-white">
+              <h3 className="text-lg font-black text-slate-900">
                 {confirmedBooking ? 'Booking Confirmed!' : 'Automated Split Checkout'}
               </h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-slate-500">
                 {confirmedBooking ? 'GST Invoice & Ticket Generated' : 'Nodal Escrow Instant Settlement Protection'}
               </p>
             </div>
           </div>
 
-          <button onClick={onClose} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+          <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-900 rounded-full bg-white border border-slate-200">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {confirmedBooking ? (
-          <div className="p-6 overflow-y-auto space-y-6 text-center bg-white dark:bg-black text-neutral-900 dark:text-white">
-            <div className="w-16 h-16 bg-red-600/20 border-2 border-red-600 rounded-full flex items-center justify-center mx-auto text-red-500 animate-bounce">
+          <div className="p-6 overflow-y-auto space-y-6 text-center bg-white text-slate-900">
+            <div className="w-16 h-16 bg-red-600/10 border-2 border-red-600 rounded-full flex items-center justify-center mx-auto text-red-600 animate-bounce">
               <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
             </div>
 
             <div>
-              <h2 className="text-2xl font-black text-neutral-900 dark:text-white">Trip Booking Successfully Confirmed!</h2>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Booking ID: <strong className="text-red-500 font-mono">{confirmedBooking.id}</strong> &bull; Invoice: <strong className="text-neutral-900 dark:text-white font-mono">{confirmedBooking.gstInvoiceNumber}</strong></p>
+              <h2 className="text-2xl font-black text-slate-900">Trip Booking Successfully Confirmed!</h2>
+              <p className="text-xs text-slate-500 mt-1">Booking ID: <strong className="text-red-600 font-mono">{confirmedBooking.id}</strong> &bull; Invoice: <strong className="text-slate-900 font-mono">{confirmedBooking.gstInvoiceNumber}</strong></p>
             </div>
 
-            <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 text-left space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-900 pb-3">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-left space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
-                  <div className="text-xs font-bold text-red-500 font-mono uppercase">{confirmedBooking.operatorName}</div>
-                  <h4 className="text-base font-bold text-neutral-900 dark:text-white mt-0.5">{confirmedBooking.tripName}</h4>
+                  <div className="text-xs font-bold text-red-600 font-mono uppercase">{confirmedBooking.operatorName}</div>
+                  <h4 className="text-base font-bold text-slate-900 mt-0.5">{confirmedBooking.tripName}</h4>
                 </div>
-                <div className="p-2 bg-white rounded-xl">
-                  <QrCode className="w-12 h-12 text-black" />
+                <div className="p-2 bg-white rounded-xl border border-slate-200">
+                  <QrCode className="w-12 h-12 text-slate-900" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-neutral-500 block text-[10px] uppercase font-bold">Passenger Name</span>
-                  <span className="text-neutral-900 dark:text-neutral-200 font-bold">{confirmedBooking.customerName}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Passenger Name</span>
+                  <span className="text-slate-900 font-bold">{confirmedBooking.customerName}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block text-[10px] uppercase font-bold">Seats Booked</span>
-                  <span className="text-red-500 font-bold font-mono">S{confirmedBooking.selectedSeats.join(', S')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Seats Booked</span>
+                  <span className="text-red-600 font-bold font-mono">S{confirmedBooking.selectedSeats.join(', S')}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block text-[10px] uppercase font-bold">Boarding Location</span>
-                  <span className="text-neutral-700 dark:text-neutral-300 font-medium">{confirmedBooking.pickupPoint}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Boarding Location</span>
+                  <span className="text-slate-700 font-medium">{confirmedBooking.pickupPoint}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block text-[10px] uppercase font-bold">Total Paid</span>
-                  <span className="text-red-500 font-bold">₹{confirmedBooking.totalAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Total Paid</span>
+                  <span className="text-red-600 font-bold">₹{confirmedBooking.totalAmount.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             </div>
@@ -148,9 +155,9 @@ export default function CheckoutModal({
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => alert(`Downloading Digital GST Ticket PDF for Booking #${confirmedBooking.id}...`)}
-                className="px-5 py-2.5 rounded-xl bg-neutral-200 dark:bg-neutral-900 hover:bg-neutral-300 dark:hover:bg-neutral-800 border border-neutral-300 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 font-bold text-xs flex items-center gap-2 transition"
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-bold text-xs flex items-center gap-2 transition"
               >
-                <Download className="w-4 h-4 text-red-500" />
+                <Download className="w-4 h-4 text-red-600" />
                 <span>Download GST Ticket (PDF)</span>
               </button>
 
@@ -167,79 +174,101 @@ export default function CheckoutModal({
             </div>
           </div>
         ) : (
-          <form onSubmit={handlePayNow} className="p-6 overflow-y-auto space-y-6 flex-1 bg-white dark:bg-black text-neutral-900 dark:text-white">
-            <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-900 p-4 rounded-2xl space-y-2">
-              <div className="text-xs text-neutral-500 uppercase font-bold tracking-wider">Booking & Split Summary</div>
-              <h4 className="text-base font-bold text-neutral-900 dark:text-white">{trip.name}</h4>
-              <div className="text-xs text-neutral-700 dark:text-neutral-300 flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-900">
-                <span>Seats Selected: <strong className="text-red-500 font-mono">S{selectedSeats.join(', S')}</strong></span>
+          <form onSubmit={handlePayNow} className="p-6 overflow-y-auto space-y-6 flex-1 bg-white text-slate-900">
+            {/* Quick 1-Click Gmail Authentication Button */}
+            <div className="bg-rose-50/80 border border-rose-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-10 h-10 rounded-xl bg-white border border-rose-300 flex items-center justify-center text-red-600 shrink-0 font-bold">
+                  G
+                </div>
+                <div>
+                  <h4 className="text-xs font-black text-slate-900">Book Faster with Gmail Login</h4>
+                  <p className="text-[11px] text-slate-500">Sign in with Google to autofill contact details & get instant SMS/Email ticket confirmation.</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGmailQuickLogin}
+                className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-extrabold text-xs flex items-center gap-2 shadow-sm shrink-0 transition"
+              >
+                <Mail className="w-4 h-4 text-red-600" />
+                <span>Continue with Gmail</span>
+              </button>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
+              <div className="text-xs text-slate-500 uppercase font-bold tracking-wider">Booking & Split Summary</div>
+              <h4 className="text-base font-bold text-slate-900">{trip.name}</h4>
+              <div className="text-xs text-slate-700 flex items-center justify-between pt-2 border-t border-slate-200">
+                <span>Seats Selected: <strong className="text-red-600 font-mono">S{selectedSeats.join(', S')}</strong></span>
                 <span>Base Fare: <strong>₹{basePrice.toLocaleString('en-IN')}</strong></span>
               </div>
-              <div className="text-xs text-neutral-700 dark:text-neutral-300 flex items-center justify-between">
+              <div className="text-xs text-slate-700 flex items-center justify-between">
                 <span>GST (5%):</span>
                 <span>₹{gstAmount.toLocaleString('en-IN')}</span>
               </div>
-              <div className="text-sm font-extrabold text-neutral-900 dark:text-white flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-900">
+              <div className="text-sm font-extrabold text-slate-900 flex items-center justify-between pt-2 border-t border-slate-200">
                 <span>Grand Total:</span>
-                <span className="text-red-600 dark:text-red-500 text-lg font-black">₹{grandTotal.toLocaleString('en-IN')}</span>
+                <span className="text-red-600 text-lg font-black">₹{grandTotal.toLocaleString('en-IN')}</span>
               </div>
 
               {/* Payment Split Protocol Notice */}
-              <div className="bg-white dark:bg-black border border-neutral-200 dark:border-neutral-900 p-3 rounded-xl text-[11px] text-neutral-500 dark:text-neutral-400 space-y-1 mt-2">
-                <div className="font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-red-500" /> Automated Payment Split Gateway Protocol
+              <div className="bg-white border border-slate-200 p-3 rounded-xl text-[11px] text-slate-500 space-y-1 mt-2">
+                <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-red-600" /> Automated Payment Split Gateway Protocol
                 </div>
                 <div className="flex justify-between">
                   <span>Escrow Nodal Account:</span>
-                  <span className="font-mono font-bold text-neutral-900 dark:text-white">Razorpay Route / Cashfree Split</span>
+                  <span className="font-mono font-bold text-slate-900">Razorpay Route / Cashfree Split</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Platform Commission (10%):</span>
-                  <span className="font-mono text-red-500">₹{estimatedCommission.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-red-600">₹{estimatedCommission.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Agency Net Settlement (T+1):</span>
-                  <span className="font-mono text-neutral-900 dark:text-white">₹{estimatedAgencyNet.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-slate-900">₹{estimatedAgencyNet.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white">Passenger Contact Details</h4>
+              <h4 className="text-sm font-bold text-slate-900">Passenger Contact Details</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-neutral-500 uppercase mb-1">Full Name</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Full Name</label>
                   <input
                     type="text"
                     required
                     value={travellerName}
                     onChange={(e) => setTravellerName(e.target.value)}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs font-bold text-neutral-900 dark:text-white focus:outline-none focus:border-red-600"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-red-600"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-neutral-500 uppercase mb-1">Phone Number (For Updates)</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Gmail / Email Address</label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    value={travellerPhone}
-                    onChange={(e) => setTravellerPhone(e.target.value)}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs font-bold text-neutral-900 dark:text-white focus:outline-none focus:border-red-600"
+                    value={travellerEmail}
+                    onChange={(e) => setTravellerEmail(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-red-600"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white">Select Payment Mode</h4>
+              <h4 className="text-sm font-bold text-slate-900">Select Payment Mode</h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('UPI')}
                   className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition ${
                     paymentMethod === 'UPI'
-                      ? 'bg-red-600/20 border-red-600 text-red-500'
-                      : 'bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                      ? 'bg-red-600/10 border-red-600 text-red-600'
+                      : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <QrCode className="w-5 h-5" />
@@ -251,8 +280,8 @@ export default function CheckoutModal({
                   onClick={() => setPaymentMethod('Card')}
                   className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition ${
                     paymentMethod === 'Card'
-                      ? 'bg-red-600/20 border-red-600 text-red-500'
-                      : 'bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                      ? 'bg-red-600/10 border-red-600 text-red-600'
+                      : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <CreditCard className="w-5 h-5" />
@@ -264,8 +293,8 @@ export default function CheckoutModal({
                   onClick={() => setPaymentMethod('NetBanking')}
                   className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition ${
                     paymentMethod === 'NetBanking'
-                      ? 'bg-red-600/20 border-red-600 text-red-500'
-                      : 'bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                      ? 'bg-red-600/10 border-red-600 text-red-600'
+                      : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <Landmark className="w-5 h-5" />
@@ -277,26 +306,14 @@ export default function CheckoutModal({
                   onClick={() => setPaymentMethod('Wallet')}
                   className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition ${
                     paymentMethod === 'Wallet'
-                      ? 'bg-red-600/20 border-red-600 text-red-500'
-                      : 'bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                      ? 'bg-red-600/10 border-red-600 text-red-600'
+                      : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <Wallet className="w-5 h-5" />
                   <span>Wallets</span>
                 </button>
               </div>
-
-              {paymentMethod === 'UPI' && (
-                <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl text-center space-y-2">
-                  <div className="w-24 h-24 bg-white p-2 rounded-xl mx-auto flex items-center justify-center border border-neutral-300 dark:border-neutral-700">
-                    <QrCode className="w-20 h-20 text-black" />
-                  </div>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">Scan QR via PhonePe, GPay, Paytm, or BHIM</p>
-                  <span className="text-[10px] text-red-500 bg-red-600/10 border border-red-600/30 px-2 py-0.5 rounded font-mono">
-                    UPI ID: TripMandi@icici
-                  </span>
-                </div>
-              )}
             </div>
 
             <button
@@ -310,7 +327,7 @@ export default function CheckoutModal({
                   <span>Processing Nodal Payment Split...</span>
                 </>
               ) : (
-                <span>Pay ₹{grandTotal.toLocaleString('en-IN')} & Execute Split Settlement</span>
+                <span>Pay ₹{grandTotal.toLocaleString('en-IN')} & Confirm Ticket</span>
               )}
             </button>
           </form>
