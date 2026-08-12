@@ -1,18 +1,18 @@
 'use client';
 
 import React from 'react';
-import { PhoneCall, Mail, MessageSquare, Globe } from 'lucide-react';
+import { PhoneCall, Mail, MessageSquare } from 'lucide-react';
 
 export default function SocialChannelsBar() {
   return (
-    <div className="w-full bg-slate-900 text-white py-6 px-4 font-sans">
+    <div className="w-full bg-slate-900 text-white py-6 px-4 font-sans border-b border-slate-800">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-1 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2">
             <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">24/7 SUPPORT HUB</span>
             <h4 className="text-base font-black text-white">Need Help With Your Booking?</h4>
           </div>
-          <p className="text-xs text-slate-400">Connect with TripMandi customer desk via WhatsApp, Phone Call, Gmail, or Social Media.</p>
+          <p className="text-xs text-slate-400">Connect with TripMandi customer desk via WhatsApp, Phone Call, Gmail, or Instagram (@TRIPMANDI_OFFICIAL).</p>
         </div>
 
         {/* Channels Grid with Icons */}
@@ -46,20 +46,20 @@ export default function SocialChannelsBar() {
             <span>Gmail</span>
           </a>
 
-          {/* Instagram SVG */}
+          {/* Official Instagram Handle: @TRIPMANDI_OFFICIAL */}
           <a
-            href="https://instagram.com/tripmandi.official"
+            href="https://www.instagram.com/tripmandi_official/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-3.5 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 transition"
-            title="Instagram"
+            className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-pink-600/30 transition active:scale-95"
+            title="Follow @TRIPMANDI_OFFICIAL on Instagram"
           >
-            <svg className="w-4 h-4 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-4 h-4 text-white fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
               <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
             </svg>
-            <span className="hidden sm:inline">Instagram</span>
+            <span>Instagram (@TRIPMANDI_OFFICIAL)</span>
           </a>
 
           {/* Twitter / X SVG */}
