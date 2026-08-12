@@ -293,7 +293,7 @@ export default function CheckoutModal({
                   </div>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">Scan QR via PhonePe, GPay, Paytm, or BHIM</p>
                   <span className="text-[10px] text-red-500 bg-red-600/10 border border-red-600/30 px-2 py-0.5 rounded font-mono">
-                    UPI ID: trip2trip@icici
+                    UPI ID: TripMandi@icici
                   </span>
                 </div>
               )}

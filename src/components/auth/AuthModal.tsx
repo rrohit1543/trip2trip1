@@ -149,7 +149,7 @@ export default function AuthModal({
             </div>
             <div>
               <h3 className="text-lg font-black text-white tracking-tight">
-                {mode === 'login' && 'Sign In to trip2trip'}
+                {mode === 'login' && 'Sign In to TripMandi'}
                 {mode === 'register' && 'Create Account'}
                 {mode === 'otp_verify' && 'Verify Mobile / Email OTP'}
                 {mode === 'forgot_password' && 'Reset Password (OWASP)'}

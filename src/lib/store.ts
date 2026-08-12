@@ -31,18 +31,18 @@ import {
 import { hashPassword, generateOTP, checkRateLimit, createSecurityLog, isValidEmail, isValidMobile } from './security';
 
 const STORAGE_KEYS = {
-  CURRENT_USER: 'trip2trip_v6_whitered_current_user',
-  USERS: 'trip2trip_v6_whitered_users',
-  KYC: 'trip2trip_v6_whitered_kyc',
-  TRIPS: 'trip2trip_v6_whitered_trips',
-  TELEMETRY: 'trip2trip_v6_whitered_telemetry',
-  BOOKINGS: 'trip2trip_v6_whitered_bookings',
-  REVIEWS: 'trip2trip_v6_whitered_reviews',
-  CHAT: 'trip2trip_v6_whitered_chat',
-  SECURITY_LOGS: 'trip2trip_v6_whitered_security_logs',
-  COMMISSION_RULES: 'trip2trip_v6_whitered_commission_rules',
-  PAYMENT_SPLITS: 'trip2trip_v6_whitered_payment_splits',
-  SUPPORT_TICKETS: 'trip2trip_v6_whitered_support_tickets',
+  CURRENT_USER: 'TripMandi_v6_whitered_current_user',
+  USERS: 'TripMandi_v6_whitered_users',
+  KYC: 'TripMandi_v6_whitered_kyc',
+  TRIPS: 'TripMandi_v6_whitered_trips',
+  TELEMETRY: 'TripMandi_v6_whitered_telemetry',
+  BOOKINGS: 'TripMandi_v6_whitered_bookings',
+  REVIEWS: 'TripMandi_v6_whitered_reviews',
+  CHAT: 'TripMandi_v6_whitered_chat',
+  SECURITY_LOGS: 'TripMandi_v6_whitered_security_logs',
+  COMMISSION_RULES: 'TripMandi_v6_whitered_commission_rules',
+  PAYMENT_SPLITS: 'TripMandi_v6_whitered_payment_splits',
+  SUPPORT_TICKETS: 'TripMandi_v6_whitered_support_tickets',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -64,7 +64,7 @@ function setStored<T>(key: string, value: T): void {
   }
 }
 
-export function useTrip2TripStore() {
+export function useTripMandiStore() {
   const [currentUser, setCurrentUser] = useState<User | null>(() =>
     getStored<User | null>(STORAGE_KEYS.CURRENT_USER, INITIAL_USERS[0])
   );
@@ -364,7 +364,7 @@ export function useTrip2TripStore() {
     const newUser: User = {
       id: `usr_${Date.now()}`,
       name,
-      email: isEmail ? identifier : `${Date.now()}@user.trip2trip`,
+      email: isEmail ? identifier : `${Date.now()}@user.TripMandi`,
       phone: !isEmail ? identifier : '+91 99000 00000',
       authIdentifier: identifier,
       authMethod,

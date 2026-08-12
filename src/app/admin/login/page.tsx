@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../../../lib/store';
+import { useTripMandiStore } from '../../../lib/store';
 import Navbar from '../../../components/common/Navbar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,10 +9,10 @@ import { ShieldAlert, Mail, Lock, KeyRound, AlertTriangle, ArrowRight } from 'lu
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { currentUser, requestAdminLoginMFA, verifyAdminMFA, logoutUser } = useTrip2TripStore();
+  const { currentUser, requestAdminLoginMFA, verifyAdminMFA, logoutUser } = useTripMandiStore();
 
   const [step, setStep] = useState<'credentials' | 'mfa'>('credentials');
-  const [adminIdentifier, setAdminIdentifier] = useState('admin@trip2trip.com');
+  const [adminIdentifier, setAdminIdentifier] = useState('admin@TripMandi.com');
   const [adminPassword, setAdminPassword] = useState('');
   const [mfaCode, setMfaCode] = useState('');
 
@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
                     <input
                       type="text"
                       required
-                      placeholder="admin@trip2trip.com"
+                      placeholder="admin@TripMandi.com"
                       value={adminIdentifier}
                       onChange={(e) => setAdminIdentifier(e.target.value)}
                       className="w-full bg-transparent text-xs font-bold text-white focus:outline-none placeholder-neutral-600"

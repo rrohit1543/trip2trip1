@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../lib/store';
+import { useTripMandiStore } from '../lib/store';
 import { Trip, Booking } from '../types';
 import Navbar from '../components/common/Navbar';
 import RouteSearch from '../components/customer/RouteSearch';
@@ -55,7 +55,7 @@ export default function Home() {
     addChatMessage,
     addReview,
     searchRoute,
-  } = useTrip2TripStore();
+  } = useTripMandiStore();
 
   const [activeTab, setActiveTab] = useState<string>('explore');
   const [searchDep, setSearchDep] = useState('Delhi');

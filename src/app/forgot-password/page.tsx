@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTrip2TripStore } from '../../lib/store';
+import { useTripMandiStore } from '../../lib/store';
 import Navbar from '../../components/common/Navbar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { Mail, Lock, KeyRound, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const { currentUser, requestPasswordReset, resetPasswordWithOTP, logoutUser } = useTrip2TripStore();
+  const { currentUser, requestPasswordReset, resetPasswordWithOTP, logoutUser } = useTripMandiStore();
 
   const [step, setStep] = useState<'request' | 'reset'>('request');
   const [identifier, setIdentifier] = useState('');

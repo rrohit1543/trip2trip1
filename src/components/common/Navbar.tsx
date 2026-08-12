@@ -42,10 +42,10 @@ export default function Navbar({
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => alert('Trip2Trip Mobile App PWA installer ready!')}
+                onClick={() => alert('TripMandi Mobile App PWA installer ready!')}
                 className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 font-bold px-3.5 py-1 rounded-full text-[11px] shadow-sm transition"
               >
-                Install trip2trip App
+                Install TripMandi App
               </button>
               <button
                 onClick={() => setShowDiscountBar(false)}
@@ -78,7 +78,7 @@ export default function Navbar({
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-2xl font-black tracking-tight text-slate-900 font-mono">
-                  trip<span className="text-red-600">2</span>trip
+                  Trip<span className="text-red-600">Mandi</span>
                 </span>
                 <span className="bg-rose-100 text-red-600 border border-rose-300 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wide">
                   INDIA NO. 1

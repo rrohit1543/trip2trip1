@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Force clean light mode (Pure White & Red theme)
-    localStorage.setItem('trip2trip_theme_pref', 'light');
+    localStorage.setItem('TripMandi_theme_pref', 'light');
     const root = document.documentElement;
     root.classList.remove('dark');
     root.classList.add('light');
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setPreference = (pref: ThemePreference) => {
     setPreferenceState('light');
-    localStorage.setItem('trip2trip_theme_pref', 'light');
+    localStorage.setItem('TripMandi_theme_pref', 'light');
     const root = document.documentElement;
     root.classList.remove('dark');
     root.classList.add('light');

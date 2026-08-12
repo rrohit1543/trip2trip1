@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../../../lib/store';
+import { useTripMandiStore } from '../../../lib/store';
 import Navbar from '../../../components/common/Navbar';
 import OperatorDashboard from '../../../components/operator/OperatorDashboard';
 import OperatorRegistration from '../../../components/operator/OperatorRegistration';
@@ -21,7 +21,7 @@ export default function OperatorDashboardPage() {
     createTrip,
     toggleLiveTrip,
     logoutUser,
-  } = useTrip2TripStore();
+  } = useTripMandiStore();
 
   const [isKYCOpen, setIsKYCOpen] = useState(false);
   const [isCreateTripOpen, setIsCreateTripOpen] = useState(false);

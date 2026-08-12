@@ -19,7 +19,7 @@ export default function AdminLoginModal({
   if (!isOpen) return null;
 
   const [step, setStep] = useState<'credentials' | 'mfa_otp'>('credentials');
-  const [adminIdentifier, setAdminIdentifier] = useState('admin@trip2trip.com');
+  const [adminIdentifier, setAdminIdentifier] = useState('admin@TripMandi.com');
   const [adminPassword, setAdminPassword] = useState('');
   const [mfaCode, setMfaCode] = useState('');
 
@@ -100,7 +100,7 @@ export default function AdminLoginModal({
                   <input
                     type="text"
                     required
-                    placeholder="admin@trip2trip.com"
+                    placeholder="admin@TripMandi.com"
                     value={adminIdentifier}
                     onChange={(e) => setAdminIdentifier(e.target.value)}
                     className="w-full bg-transparent text-xs font-bold text-white focus:outline-none placeholder-neutral-600"

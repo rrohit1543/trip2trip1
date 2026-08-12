@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../../../lib/store';
+import { useTripMandiStore } from '../../../lib/store';
 import Navbar from '../../../components/common/Navbar';
 import PassengerDashboard from '../../../components/customer/PassengerDashboard';
 import ChatWidget from '../../../components/common/ChatWidget';
@@ -19,7 +19,7 @@ export default function PassengerDashboardPage() {
     addChatMessage,
     addReview,
     logoutUser,
-  } = useTrip2TripStore();
+  } = useTripMandiStore();
 
   const [activeChatTripId, setActiveChatTripId] = useState<string | null>(null);
   const [reviewTrip, setReviewTrip] = useState<{ tripId: string; operatorId: string } | null>(null);

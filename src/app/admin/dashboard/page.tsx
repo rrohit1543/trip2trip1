@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../../../lib/store';
+import { useTripMandiStore } from '../../../lib/store';
 import Navbar from '../../../components/common/Navbar';
 import AdminDashboard from '../../../components/admin/AdminDashboard';
 import TripDetailModal from '../../../components/customer/TripDetailModal';
@@ -24,7 +24,7 @@ export default function AdminDashboardPage() {
     updateCommissionRule,
     updateKYCStatus,
     logoutUser,
-  } = useTrip2TripStore();
+  } = useTripMandiStore();
 
   const [detailTrip, setDetailTrip] = useState<Trip | null>(null);
 

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trip2Trip - 3-Sided B2B2C Travel Marketplace Platform",
+  title: "TripMandi - 3-Sided B2B2C Travel Marketplace Platform",
   description: "Scalable multi-tenant B2B2C Travel Marketplace with Automated Payment Split Gateway, Customer Support Desk, and Live GPS Route Telemetry.",
 };
 

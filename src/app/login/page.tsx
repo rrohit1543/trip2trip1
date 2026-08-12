@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTrip2TripStore } from '../../lib/store';
+import { useTripMandiStore } from '../../lib/store';
 import Navbar from '../../components/common/Navbar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { Mail, Lock, ArrowRight, AlertCircle, ShieldCheck, Bus } from 'lucide-re
 
 export default function LoginPage() {
   const router = useRouter();
-  const { currentUser, loginUser, logoutUser, requestAdminLoginMFA, verifyAdminMFA } = useTrip2TripStore();
+  const { currentUser, loginUser, logoutUser, requestAdminLoginMFA, verifyAdminMFA } = useTripMandiStore();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +51,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-600 flex items-center justify-center mx-auto text-red-500 font-mono font-bold text-xl">
               2
             </div>
-            <h1 className="text-2xl font-black text-white">Sign In to trip2trip</h1>
+            <h1 className="text-2xl font-black text-white">Sign In to TripMandi</h1>
             <p className="text-xs text-neutral-400">Customer & Tour Operator Portal</p>
           </div>
 

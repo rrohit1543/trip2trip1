@@ -55,9 +55,9 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_agent_1',
     name: 'Priya Mehta (Customer Support)',
-    email: 'support@trip2trip.com',
+    email: 'support@TripMandi.com',
     phone: '+91 1800 888 999',
-    authIdentifier: 'support@trip2trip.com',
+    authIdentifier: 'support@TripMandi.com',
     authMethod: 'email',
     passwordHash: hashPassword('agent123!'),
     role: 'support_agent',
@@ -66,10 +66,10 @@ export const INITIAL_USERS: User[] = [
   },
   {
     id: 'usr_admin_1',
-    name: 'Trip2Trip Super Admin',
-    email: 'admin@trip2trip.com',
+    name: 'TripMandi Super Admin',
+    email: 'admin@TripMandi.com',
     phone: '+91 1800 123 4567',
-    authIdentifier: 'admin@trip2trip.com',
+    authIdentifier: 'admin@TripMandi.com',
     authMethod: 'email',
     passwordHash: hashPassword('adminPass123!'),
     role: 'admin',
@@ -85,7 +85,7 @@ export const INITIAL_COMMISSION_RULES: CommissionRule[] = [
     level: 'global',
     commissionPercentage: 10, // Base 10%
     updatedAt: new Date().toISOString(),
-    updatedBy: 'Trip2Trip Super Admin',
+    updatedBy: 'TripMandi Super Admin',
   },
   {
     id: 'rule_agency_1',
@@ -94,7 +94,7 @@ export const INITIAL_COMMISSION_RULES: CommissionRule[] = [
     targetName: 'Himalayan Yatra Expeditions',
     commissionPercentage: 8, // Special 8% override for high-volume vendor
     updatedAt: new Date().toISOString(),
-    updatedBy: 'Trip2Trip Super Admin',
+    updatedBy: 'TripMandi Super Admin',
   },
 ];
 
@@ -497,7 +497,7 @@ export const INITIAL_SECURITY_LOGS: SecurityEvent[] = [
     id: 'sec_2',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
     eventType: 'ADMIN_MFA_SUCCESS',
-    identifier: 'admin@trip2trip.com',
+    identifier: 'admin@TripMandi.com',
     details: 'Super Admin authenticated with mandatory 2FA MFA OTP',
     ipAddress: '49.207.18.99',
   },

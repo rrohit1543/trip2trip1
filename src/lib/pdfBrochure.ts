@@ -12,7 +12,7 @@ export function generatePdfBrochure(trip: Trip) {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>${trip.name} - Official Tour Brochure (Trip2Trip)</title>
+        <title>${trip.name} - Official Tour Brochure (TripMandi)</title>
         <style>
           body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #000; padding: 40px; line-height: 1.5; }
           .header { border-bottom: 3px solid #ef4444; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
@@ -118,7 +118,7 @@ export function generatePdfBrochure(trip: Trip) {
         </div>
 
         <div class="footer">
-          Generated automatically by <strong>Trip2Trip B2B2C Marketplace</strong> &bull; https://trip2trip.com
+          Generated automatically by <strong>TripMandi B2B2C Marketplace</strong> &bull; https://TripMandi.com
         </div>
       </body>
     </html>

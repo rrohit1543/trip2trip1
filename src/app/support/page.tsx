@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTrip2TripStore } from '../../lib/store';
+import { useTripMandiStore } from '../../lib/store';
 import Navbar from '../../components/common/Navbar';
 import SupportDesk from '../../components/support/SupportDesk';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ export default function SupportPage() {
     updateTicketStatus,
     processTicketRefund,
     logoutUser,
-  } = useTrip2TripStore();
+  } = useTripMandiStore();
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-sans selection:bg-red-600 selection:text-white flex flex-col transition-colors duration-200">

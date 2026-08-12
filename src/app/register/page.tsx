@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTrip2TripStore } from '../../lib/store';
+import { useTripMandiStore } from '../../lib/store';
 import { UserRole } from '../../types';
 import Navbar from '../../components/common/Navbar';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import { Mail, Lock, User, KeyRound, AlertCircle, CheckCircle2 } from 'lucide-re
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { currentUser, registerUser, verifyRegistrationOTP, logoutUser } = useTrip2TripStore();
+  const { currentUser, registerUser, verifyRegistrationOTP, logoutUser } = useTripMandiStore();
 
   const [mode, setMode] = useState<'form' | 'otp'>('form');
   const [role, setRole] = useState<UserRole>('customer');
