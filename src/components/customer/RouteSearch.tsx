@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, MapPin, Radio, Clock, ShieldAlert, Flame, Filter } from 'lucide-react';
+import { Search, MapPin, Radio, Clock, ShieldAlert, Flame, Filter, Calendar, Users, Heart } from 'lucide-react';
 import { RouteSearchResult } from '../../types';
 
 interface RouteSearchProps {
@@ -13,6 +13,8 @@ export default function RouteSearch({ onSearch, searchResult }: RouteSearchProps
   const [departure, setDeparture] = useState('Delhi');
   const [destination, setDestination] = useState('Manali');
   const [category, setCategory] = useState('All');
+  const [journeyDate, setJourneyDate] = useState('2026-08-15');
+  const [isWomenOnly, setIsWomenOnly] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,173 +28,186 @@ export default function RouteSearch({ onSearch, searchResult }: RouteSearchProps
   };
 
   return (
-    <div className="relative w-full rounded-3xl bg-white dark:bg-black border-2 border-neutral-200 dark:border-neutral-900 p-6 md:p-8 shadow-2xl overflow-hidden transition-colors duration-200">
-      {/* Background radial glow accents in Red */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="relative w-full max-w-7xl mx-auto px-4 font-sans mb-16">
+      {/* Hero Panoramic Image Banner (redBus Style) */}
+      <div className="relative w-full h-[360px] md:h-[420px] rounded-3xl overflow-hidden shadow-2xl bg-slate-950">
+        <img
+          src="/images/hero_red_bus_banner.jpg"
+          alt="India's No. 1 online group trip booking site"
+          className="w-full h-full object-cover opacity-75 transform scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-transparent"></div>
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-600/10 border border-red-600/30 text-red-600 dark:text-red-500 text-xs font-bold uppercase tracking-wider mb-4">
-          <Radio className="w-3.5 h-3.5 animate-pulse" />
-          Real-Time Live GPS Route Discovery
+        <div className="absolute top-12 left-6 md:left-12 right-6 max-w-3xl space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-600/20 border border-red-600/40 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+            <Radio className="w-3.5 h-3.5 text-red-500 animate-pulse" />
+            Live GPS Telemetry & B2B2C Marketplace
+          </div>
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+            India's No. 1 online group trip booking site
+          </h1>
+          <p className="text-slate-200 text-sm md:text-base font-semibold max-w-xl drop-shadow">
+            Discover verified tour agency packages, track live buses moving on your route in real-time, and get instant seat confirmation.
+          </p>
         </div>
-        <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-          Discover Group Trips & Track <span className="text-red-600 dark:text-red-500">Live Active Buses</span>
-        </h1>
-        <p className="text-slate-600 dark:text-neutral-400 text-sm md:text-base mt-3 max-w-2xl mx-auto">
-          Unlike ordinary booking platforms, see live trips currently moving on your route, check real-time GPS coordinates, seat availability, and book verified tour packages.
-        </p>
       </div>
 
-      {/* Main Search Bar Form */}
-      <form onSubmit={handleSubmit} className="relative z-10 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 bg-slate-50 dark:bg-neutral-950/90 border border-neutral-200 dark:border-neutral-800 p-3.5 rounded-2xl shadow-2xl backdrop-blur-xl">
-          {/* Departure */}
-          <div className="md:col-span-4 flex items-center gap-3 bg-white dark:bg-black border border-neutral-300 dark:border-neutral-800 px-4 py-3 rounded-xl focus-within:border-red-600 transition-all">
-            <MapPin className="w-5 h-5 text-red-600 dark:text-red-500 shrink-0" />
-            <div className="w-full text-left">
-              <label className="block text-[10px] font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">From (Pickup / City)</label>
-              <input
-                type="text"
-                value={departure}
-                onChange={(e) => setDeparture(e.target.value)}
-                placeholder="e.g. Delhi, Indore, Mumbai"
-                className="w-full bg-transparent text-slate-900 dark:text-white text-sm font-bold focus:outline-none placeholder-slate-400 dark:placeholder-neutral-600"
-              />
+      {/* Floating White Search Widget Card (Overlapping Hero Banner) */}
+      <div className="relative z-30 max-w-5xl mx-auto -mt-24 md:-mt-28">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-3xl p-5 md:p-7 shadow-2xl text-slate-900 dark:text-white transition-colors duration-200">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-neutral-800">
+            {/* From Input */}
+            <div className="md:col-span-3 pb-3 md:pb-0 md:pr-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-neutral-900 border border-rose-200 dark:border-neutral-800 flex items-center justify-center text-red-600 shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div className="w-full text-left">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">From</label>
+                <input
+                  type="text"
+                  value={departure}
+                  onChange={(e) => setDeparture(e.target.value)}
+                  placeholder="e.g. Delhi"
+                  className="w-full bg-transparent text-slate-900 dark:text-white text-sm font-black focus:outline-none placeholder-slate-400"
+                />
+              </div>
+            </div>
+
+            {/* To Input */}
+            <div className="md:col-span-3 py-3 md:py-0 md:px-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-neutral-900 border border-rose-200 dark:border-neutral-800 flex items-center justify-center text-red-600 shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div className="w-full text-left">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">To</label>
+                <input
+                  type="text"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder="e.g. Manali"
+                  className="w-full bg-transparent text-slate-900 dark:text-white text-sm font-black focus:outline-none placeholder-slate-400"
+                />
+              </div>
+            </div>
+
+            {/* Date of Journey */}
+            <div className="md:col-span-3 py-3 md:py-0 md:px-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-neutral-900 border border-rose-200 dark:border-neutral-800 flex items-center justify-center text-red-600 shrink-0">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div className="w-full text-left">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Date of Journey</label>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setJourneyDate('2026-08-15')}
+                      className="text-[9px] font-bold bg-rose-100 dark:bg-red-950 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded"
+                    >
+                      Today
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setJourneyDate('2026-08-16')}
+                      className="text-[9px] font-bold bg-slate-100 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 px-1.5 py-0.5 rounded"
+                    >
+                      Tomorrow
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="date"
+                  value={journeyDate}
+                  onChange={(e) => setJourneyDate(e.target.value)}
+                  className="w-full bg-transparent text-slate-900 dark:text-white text-xs font-black focus:outline-none cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Category / Group Filter Pill */}
+            <div className="md:col-span-3 pt-3 md:pt-0 md:pl-3 flex items-center justify-between gap-2">
+              <div className="w-full text-left">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tour Category</label>
+                <select
+                  value={category}
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                    onSearch(departure, destination, e.target.value);
+                  }}
+                  className="w-full bg-transparent text-slate-900 dark:text-white text-xs font-black focus:outline-none cursor-pointer"
+                >
+                  <option value="All">All Categories</option>
+                  <option value="Trekking">Trekking</option>
+                  <option value="Beach Caravan">Beach Caravan</option>
+                  <option value="Adventure">Adventure</option>
+                  <option value="Heritage">Heritage</option>
+                  <option value="Leisure & Luxury">Leisure & Luxury</option>
+                </select>
+              </div>
+
+              {/* Booking for Women Toggle (redBus Style) */}
+              <div className="bg-rose-50 dark:bg-neutral-900 border border-rose-200 dark:border-neutral-800 p-2 rounded-2xl flex items-center gap-1.5 shrink-0">
+                <Heart className="w-4 h-4 text-red-600 fill-red-600" />
+                <div className="text-[10px] font-bold text-slate-800 dark:text-neutral-200">
+                  <span>Solo Women</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={isWomenOnly}
+                  onChange={(e) => setIsWomenOnly(e.target.checked)}
+                  className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Destination */}
-          <div className="md:col-span-4 flex items-center gap-3 bg-white dark:bg-black border border-neutral-300 dark:border-neutral-800 px-4 py-3 rounded-xl focus-within:border-red-600 transition-all">
-            <MapPin className="w-5 h-5 text-slate-900 dark:text-white shrink-0" />
-            <div className="w-full text-left">
-              <label className="block text-[10px] font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">To (Destination / Route)</label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="e.g. Manali, Goa, Coorg"
-                className="w-full bg-transparent text-slate-900 dark:text-white text-sm font-bold focus:outline-none placeholder-slate-400 dark:placeholder-neutral-600"
-              />
-            </div>
-          </div>
-
-          {/* Category Filter */}
-          <div className="md:col-span-2 flex items-center gap-2 bg-white dark:bg-black border border-neutral-300 dark:border-neutral-800 px-3 py-3 rounded-xl focus-within:border-red-600 transition-all">
-            <Filter className="w-4 h-4 text-slate-500 dark:text-neutral-400 shrink-0" />
-            <div className="w-full text-left">
-              <label className="block text-[10px] font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Category</label>
-              <select
-                value={category}
-                onChange={(e) => {
-                  setCategory(e.target.value);
-                  onSearch(departure, destination, e.target.value);
-                }}
-                className="w-full bg-transparent text-slate-900 dark:text-white text-xs font-bold focus:outline-none cursor-pointer"
-              >
-                <option value="All">All Categories</option>
-                <option value="Trekking">Trekking</option>
-                <option value="Beach Caravan">Beach Caravan</option>
-                <option value="Adventure">Adventure</option>
-                <option value="Heritage">Heritage</option>
-                <option value="Leisure & Luxury">Leisure & Luxury</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Search Button */}
-          <div className="md:col-span-2">
+          {/* Centered Red Pill Search Button (Identical to redBus) */}
+          <div className="flex justify-center -mb-12 pt-4">
             <button
               type="submit"
-              className="w-full h-full min-h-[50px] bg-red-600 hover:bg-red-700 text-white font-black text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-transform active:scale-95"
+              className="bg-red-600 hover:bg-red-700 text-white font-extrabold text-base px-10 py-3.5 rounded-full shadow-xl shadow-red-600/40 flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer border-2 border-white dark:border-black"
             >
               <Search className="w-5 h-5 stroke-[3]" />
-              <span>Search Route</span>
+              <span>Search Group Trips</span>
             </button>
           </div>
-        </div>
-      </form>
+        </form>
 
-      {/* Quick Route Preset Chips */}
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 mt-5">
-        <span className="text-xs text-slate-500 dark:text-neutral-400 font-bold mr-1">Popular Live Routes:</span>
-        <button
-          onClick={() => setPreset('Delhi', 'Manali')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
-            departure === 'Delhi' && destination === 'Manali'
-              ? 'bg-red-600/20 border-red-600 text-red-600 dark:text-red-500 font-extrabold'
-              : 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-700'
-          }`}
-        >
-          Delhi &rarr; Manali
-        </button>
+        {/* Popular Live Routes Chips */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-14">
+          <span className="text-xs text-slate-500 font-bold mr-1">Popular Live Routes:</span>
+          <button
+            onClick={() => setPreset('Delhi', 'Manali')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+              departure === 'Delhi' && destination === 'Manali'
+                ? 'bg-red-600 text-white border-red-600 shadow-sm font-black'
+                : 'bg-white dark:bg-black border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-red-400'
+            }`}
+          >
+            Delhi &rarr; Manali
+          </button>
 
-        <button
-          onClick={() => setPreset('Indore', 'Goa')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
-            departure === 'Indore' && destination === 'Goa'
-              ? 'bg-red-600/20 border-red-600 text-red-600 dark:text-red-500 font-extrabold'
-              : 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-700'
-          }`}
-        >
-          Indore &rarr; Goa
-        </button>
+          <button
+            onClick={() => setPreset('Indore', 'Goa')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+              departure === 'Indore' && destination === 'Goa'
+                ? 'bg-red-600 text-white border-red-600 shadow-sm font-black'
+                : 'bg-white dark:bg-black border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-red-400'
+            }`}
+          >
+            Indore &rarr; Goa
+          </button>
 
-        <button
-          onClick={() => setPreset('Mumbai', 'Goa')}
-          className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
-            departure === 'Mumbai' && destination === 'Goa'
-              ? 'bg-red-600/20 border-red-600 text-red-600 dark:text-red-500 font-extrabold'
-              : 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-700'
-          }`}
-        >
-          Mumbai &rarr; Goa
-        </button>
-      </div>
-
-      {/* Live Route Discovery Status Metrics Bar */}
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 max-w-4xl mx-auto">
-        <div className="bg-slate-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3.5 rounded-2xl flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 flex items-center justify-center text-slate-900 dark:text-white">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div className="text-left">
-            <div className="text-xl font-black text-slate-900 dark:text-white">{searchResult.upcomingCount}</div>
-            <div className="text-[11px] font-bold text-slate-500 dark:text-neutral-400">Upcoming Departures</div>
-          </div>
-        </div>
-
-        <div className="bg-slate-50 dark:bg-neutral-950 border border-red-600/40 p-3.5 rounded-2xl flex items-center gap-3 relative overflow-hidden">
-          <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-600 flex items-center justify-center text-red-600 dark:text-red-500">
-            <Radio className="w-5 h-5 animate-pulse" />
-          </div>
-          <div className="text-left">
-            <div className="text-xl font-black text-red-600 dark:text-red-500 flex items-center gap-1.5">
-              <span>{searchResult.liveCount}</span>
-              <span className="text-[10px] bg-red-600/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded font-bold uppercase">LIVE</span>
-            </div>
-            <div className="text-[11px] font-bold text-slate-700 dark:text-neutral-300">Live Active Trips</div>
-          </div>
-        </div>
-
-        <div className="bg-slate-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3.5 rounded-2xl flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 flex items-center justify-center text-slate-900 dark:text-white">
-            <Flame className="w-5 h-5 text-red-600 dark:text-red-500" />
-          </div>
-          <div className="text-left">
-            <div className="text-xl font-black text-slate-900 dark:text-white">{searchResult.nearIntermediateCount}</div>
-            <div className="text-[11px] font-bold text-slate-500 dark:text-neutral-400">En-route / Intermediate</div>
-          </div>
-        </div>
-
-        <div className="bg-slate-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3.5 rounded-2xl flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 flex items-center justify-center text-slate-900 dark:text-white">
-            <ShieldAlert className="w-5 h-5 text-slate-900 dark:text-white" />
-          </div>
-          <div className="text-left">
-            <div className="text-xl font-black text-slate-900 dark:text-white">{searchResult.nearDestinationCount}</div>
-            <div className="text-[11px] font-bold text-slate-500 dark:text-neutral-400">Reaching Soon</div>
-          </div>
+          <button
+            onClick={() => setPreset('Mumbai', 'Goa')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+              departure === 'Mumbai' && destination === 'Goa'
+                ? 'bg-red-600 text-white border-red-600 shadow-sm font-black'
+                : 'bg-white dark:bg-black border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-red-400'
+            }`}
+          >
+            Mumbai &rarr; Goa
+          </button>
         </div>
       </div>
     </div>
