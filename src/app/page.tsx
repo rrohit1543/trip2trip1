@@ -97,7 +97,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white font-sans antialiased selection:bg-red-600 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-red-600 selection:text-white">
       {/* Navbar Header */}
       <Navbar
         currentUser={currentUser}
@@ -109,31 +109,31 @@ export default function Home() {
       />
 
       {/* Main Content Body */}
-      <main className="pb-20">
+      <main className="pb-20 bg-white">
         {/* VIEW 1: ROUTE SEARCH & DISCOVER (Customer View) */}
         {activeTab === 'explore' && (
-          <div className="space-y-12">
+          <div className="space-y-12 bg-white">
             <RouteSearch onSearch={handleSearch} searchResult={searchResult} />
 
             {/* redBus Style Festival & Promo Banners */}
             <OfferBanners />
 
-            <div className="max-w-7xl mx-auto px-4 space-y-6 pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-neutral-900 pb-4">
+            <div className="max-w-7xl mx-auto px-4 space-y-6 pt-4 bg-white">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
                     <span>Available Group Trips</span>
-                    <span className="text-xs bg-red-600/20 text-red-600 dark:text-red-500 border border-red-600/40 px-2.5 py-0.5 rounded-full font-mono">
+                    <span className="text-xs bg-red-600/10 text-red-600 border border-red-600/30 px-2.5 py-0.5 rounded-full font-mono">
                       {searchResult.matchingTrips.length} Found
                     </span>
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
-                    Showing verified trips for <strong className="text-slate-900 dark:text-white">{searchDep} &rarr; {searchDest}</strong>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Showing verified trips for <strong className="text-slate-900">{searchDep} &rarr; {searchDest}</strong>
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs font-bold">
-                  <span className="px-3 py-1 bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-xl text-slate-700 dark:text-neutral-300">
+                  <span className="px-3 py-1 bg-white border border-slate-200 rounded-xl text-slate-700 shadow-sm">
                     {searchResult.liveCount} Live Telemetry Active
                   </span>
                 </div>
@@ -154,28 +154,28 @@ export default function Home() {
               </div>
 
               {/* Customer Testimonials */}
-              <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-neutral-900 rounded-3xl p-6 md:p-8 space-y-6">
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="inline-flex items-center gap-1.5 text-xs text-red-600 font-bold uppercase tracking-wider mb-1">
                       <Star className="w-4 h-4 fill-red-600 text-red-600" /> Traveler Testimonials
                     </div>
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white">Verified Customer Reviews</h3>
+                    <h3 className="text-xl font-black text-slate-900">Verified Customer Reviews</h3>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {reviews.map((rev) => (
-                    <div key={rev.id} className="bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 p-5 rounded-2xl space-y-2">
+                    <div key={rev.id} className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900 dark:text-white text-xs">{rev.customerName}</span>
+                        <span className="font-bold text-slate-900 text-xs">{rev.customerName}</span>
                         <div className="flex items-center gap-1 text-xs text-red-600">
                           {Array.from({ length: rev.operatorRating }).map((_, i) => (
                             <Star key={i} className="w-3.5 h-3.5 fill-red-600 text-red-600" />
                           ))}
                         </div>
                       </div>
-                      <p className="text-xs text-slate-700 dark:text-neutral-300 leading-relaxed">"{rev.comment}"</p>
+                      <p className="text-xs text-slate-700 leading-relaxed">"{rev.comment}"</p>
                       <span className="text-[10px] text-slate-500 block font-mono">
                         Verified Booking • {new Date(rev.createdAt).toLocaleDateString()}
                       </span>
@@ -189,15 +189,15 @@ export default function Home() {
 
         {/* VIEW 2: NATIONAL FLEET RADAR */}
         {activeTab === 'live-radar' && (
-          <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
-            <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-neutral-900 p-6 rounded-3xl space-y-4 shadow-xl">
+          <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6 bg-white">
+            <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="inline-flex items-center gap-2 bg-red-600/20 text-red-600 border border-red-600/40 text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">
+                  <div className="inline-flex items-center gap-2 bg-red-600/10 text-red-600 border border-red-600/30 text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">
                     <Radio className="w-3.5 h-3.5 animate-pulse" /> Live Telemetry
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">National Live Fleet Radar</h2>
-                  <p className="text-xs text-slate-500 dark:text-neutral-400">Real-time GPS coordinates of all group tour buses currently moving across India.</p>
+                  <h2 className="text-2xl font-black text-slate-900">National Live Fleet Radar</h2>
+                  <p className="text-xs text-slate-500">Real-time GPS coordinates of all group tour buses currently moving across India.</p>
                 </div>
               </div>
 

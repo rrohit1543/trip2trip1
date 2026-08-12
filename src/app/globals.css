@@ -1,65 +1,42 @@
 @import "tailwindcss";
 
-/* Premium White, Red & Black Theme Design System Tokens */
+/* 100% Pure White Background Design System Tokens */
 :root {
   --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
+  --bg-secondary: #ffffff;
   --bg-card: #ffffff;
-  --bg-input: #f1f5f9;
+  --bg-input: #ffffff;
   --border-color: #e2e8f0;
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-muted: #64748b;
   --brand-red: #ef4444;
   --brand-red-dark: #dc2626;
   --brand-black: #0f172a;
-  --shadow-glow: rgba(239, 68, 68, 0.18);
+  --shadow-glow: rgba(239, 68, 68, 0.15);
 }
 
-.dark {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-card: #000000;
-  --bg-input: #0a0a0a;
-  --border-color: #262626;
-  --text-primary: #ffffff;
-  --text-secondary: #a3a3a3;
-  --text-muted: #737373;
-  --brand-red: #ef4444;
-  --brand-red-dark: #dc2626;
-  --brand-black: #ffffff;
-  --shadow-glow: rgba(239, 68, 68, 0.25);
-}
-
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+html, body {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100%;
 }
 
-/* Custom Red-Black Scrollbar */
+/* Pure White Background Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #ffffff;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #262626;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -68,19 +45,11 @@ body {
 
 /* Leaflet Container & Map Tiles */
 .leaflet-container {
-  background: #f8fafc !important;
+  background: #ffffff !important;
   font-family: inherit !important;
 }
 
-.dark .leaflet-container {
-  background: #000000 !important;
-}
-
-.dark .leaflet-tile {
-  filter: grayscale(100%) invert(100%) contrast(140%) hue-rotate(180deg) !important;
-}
-
-.light .leaflet-tile {
+.leaflet-tile {
   filter: saturate(110%) contrast(105%) !important;
 }
 
@@ -97,15 +66,6 @@ body {
   box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.25) !important;
 }
 
-.dark .leaflet-popup-content-wrapper {
-  background: #0a0a0a !important;
-  color: #ffffff !important;
-}
-
 .leaflet-popup-tip {
   background: #ffffff !important;
-}
-
-.dark .leaflet-popup-tip {
-  background: #0a0a0a !important;
 }
