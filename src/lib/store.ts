@@ -31,18 +31,18 @@ import {
 import { hashPassword, generateOTP, checkRateLimit, createSecurityLog, isValidEmail, isValidMobile } from './security';
 
 const STORAGE_KEYS = {
-  CURRENT_USER: 'trip2trip_v5_marketplace_current_user',
-  USERS: 'trip2trip_v5_marketplace_users',
-  KYC: 'trip2trip_v5_marketplace_kyc',
-  TRIPS: 'trip2trip_v5_marketplace_trips',
-  TELEMETRY: 'trip2trip_v5_marketplace_telemetry',
-  BOOKINGS: 'trip2trip_v5_marketplace_bookings',
-  REVIEWS: 'trip2trip_v5_marketplace_reviews',
-  CHAT: 'trip2trip_v5_marketplace_chat',
-  SECURITY_LOGS: 'trip2trip_v5_marketplace_security_logs',
-  COMMISSION_RULES: 'trip2trip_v5_marketplace_commission_rules',
-  PAYMENT_SPLITS: 'trip2trip_v5_marketplace_payment_splits',
-  SUPPORT_TICKETS: 'trip2trip_v5_marketplace_support_tickets',
+  CURRENT_USER: 'trip2trip_v6_whitered_current_user',
+  USERS: 'trip2trip_v6_whitered_users',
+  KYC: 'trip2trip_v6_whitered_kyc',
+  TRIPS: 'trip2trip_v6_whitered_trips',
+  TELEMETRY: 'trip2trip_v6_whitered_telemetry',
+  BOOKINGS: 'trip2trip_v6_whitered_bookings',
+  REVIEWS: 'trip2trip_v6_whitered_reviews',
+  CHAT: 'trip2trip_v6_whitered_chat',
+  SECURITY_LOGS: 'trip2trip_v6_whitered_security_logs',
+  COMMISSION_RULES: 'trip2trip_v6_whitered_commission_rules',
+  PAYMENT_SPLITS: 'trip2trip_v6_whitered_payment_splits',
+  SUPPORT_TICKETS: 'trip2trip_v6_whitered_support_tickets',
 };
 
 function getStored<T>(key: string, fallback: T): T {

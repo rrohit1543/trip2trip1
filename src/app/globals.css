@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Design System Tokens for Light & Dark Mode */
+/* Premium White, Red & Black Theme Design System Tokens */
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
@@ -8,11 +8,12 @@
   --bg-input: #f1f5f9;
   --border-color: #e2e8f0;
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --text-muted: #94a3b8;
   --brand-red: #ef4444;
   --brand-red-dark: #dc2626;
-  --shadow-glow: rgba(239, 68, 68, 0.15);
+  --brand-black: #0f172a;
+  --shadow-glow: rgba(239, 68, 68, 0.18);
 }
 
 .dark {
@@ -26,6 +27,7 @@
   --text-muted: #737373;
   --brand-red: #ef4444;
   --brand-red-dark: #dc2626;
+  --brand-black: #ffffff;
   --shadow-glow: rgba(239, 68, 68, 0.25);
 }
 
@@ -37,18 +39,22 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Scrollbar */
+/* Custom Red-Black Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: #f1f5f9;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
@@ -60,10 +66,14 @@ body {
   background: #ef4444;
 }
 
-/* Leaflet Container Styling & Adaptive Map Filter */
+/* Leaflet Container & Map Tiles */
 .leaflet-container {
-  background: var(--bg-primary) !important;
+  background: #f8fafc !important;
   font-family: inherit !important;
+}
+
+.dark .leaflet-container {
+  background: #000000 !important;
 }
 
 .dark .leaflet-tile {
@@ -80,13 +90,22 @@ body {
 }
 
 .leaflet-popup-content-wrapper {
-  background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
-  border: 1px solid #dc2626 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 25px -5px var(--shadow-glow) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px solid #dc2626 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.25) !important;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  background: #0a0a0a !important;
+  color: #ffffff !important;
 }
 
 .leaflet-popup-tip {
-  background: var(--bg-secondary) !important;
+  background: #ffffff !important;
+}
+
+.dark .leaflet-popup-tip {
+  background: #0a0a0a !important;
 }

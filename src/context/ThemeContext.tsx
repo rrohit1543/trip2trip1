@@ -13,22 +13,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [preference, setPreferenceState] = useState<ThemePreference>('dark');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
+  const [preference, setPreferenceState] = useState<ThemePreference>('light');
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    // Read stored preference or system preference on mount
+    // Read stored preference or default to light mode (White & Red theme)
     const stored = localStorage.getItem('trip2trip_theme_pref') as ThemePreference | null;
     if (stored) {
       setPreferenceState(stored);
     } else {
-      setPreferenceState('dark');
+      setPreferenceState('light');
     }
   }, []);
 
   useEffect(() => {
     // Resolve preference
-    let activeTheme: 'light' | 'dark' = 'dark';
+    let activeTheme: 'light' | 'dark' = 'light';
     if (preference === 'system') {
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       activeTheme = prefersDark ? 'dark' : 'light';
