@@ -1,27 +1,32 @@
 @import "tailwindcss";
 
-/* 100% Pure White Background Design System Tokens */
-:root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-input: #ffffff;
-  --border-color: #e2e8f0;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --brand-red: #ef4444;
-  --brand-red-dark: #dc2626;
-  --brand-black: #0f172a;
-  --shadow-glow: rgba(239, 68, 68, 0.15);
+/* Force 100% Pure White Background Design Tokens */
+:root, .dark, .light {
+  --bg-primary: #ffffff !important;
+  --bg-secondary: #ffffff !important;
+  --bg-card: #ffffff !important;
+  --bg-input: #ffffff !important;
+  --border-color: #e2e8f0 !important;
+  --text-primary: #0f172a !important;
+  --text-secondary: #475569 !important;
+  --text-muted: #64748b !important;
+  --brand-red: #ef4444 !important;
+  --brand-red-dark: #dc2626 !important;
+  --brand-black: #0f172a !important;
+  --shadow-glow: rgba(239, 68, 68, 0.15) !important;
 }
 
-html, body {
+html, body, #__next, main {
   background-color: #ffffff !important;
   color: #0f172a !important;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  min-height: 100%;
+  min-height: 100vh;
+}
+
+/* Force dark utility overrides to render crisp white & red */
+.dark body, .dark main, .dark div {
+  color: #0f172a;
 }
 
 /* Pure White Background Scrollbar */

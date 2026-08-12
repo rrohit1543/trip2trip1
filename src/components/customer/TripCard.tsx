@@ -16,7 +16,7 @@ export default function TripCard({ trip, telemetry, onTrackLive, onViewDetails, 
   const isLive = trip.status === 'live';
 
   return (
-    <div className="relative group bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-600 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+    <div className="relative group bg-white border border-slate-200 hover:border-red-600 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
       {/* Top Image Banner */}
       <div className="relative h-52 w-full overflow-hidden bg-slate-900">
         <img
@@ -47,7 +47,7 @@ export default function TripCard({ trip, telemetry, onTrackLive, onViewDetails, 
 
         {/* Price & Rating Badge */}
         <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
-          <div className="bg-white/95 text-slate-900 font-black text-lg px-3 py-1 rounded-xl shadow-lg border border-neutral-200">
+          <div className="bg-white text-slate-900 font-black text-lg px-3 py-1 rounded-xl shadow-lg border border-slate-200">
             ₹{trip.pricePerPerson.toLocaleString('en-IN')} <span className="text-[10px] text-slate-500 font-medium">/ person</span>
           </div>
           <div className="flex items-center gap-1 bg-black/80 backdrop-blur px-2.5 py-0.5 rounded-lg border border-neutral-800 text-white text-xs font-bold">
@@ -70,45 +70,45 @@ export default function TripCard({ trip, telemetry, onTrackLive, onViewDetails, 
       </div>
 
       {/* Card Content Body */}
-      <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
+      <div className="p-5 space-y-4 flex-1 flex flex-col justify-between bg-white text-slate-900">
         <div>
-          <div className="text-[11px] text-red-600 dark:text-red-500 font-bold uppercase tracking-wider mb-1 flex items-center justify-between">
+          <div className="text-[11px] text-red-600 font-bold uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>{trip.operatorName}</span>
-            <span className="text-slate-500 dark:text-neutral-400 font-normal">{trip.difficultyLevel} Tour</span>
+            <span className="text-slate-500 font-normal">{trip.difficultyLevel} Tour</span>
           </div>
 
-          <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors line-clamp-1">
+          <h3 className="text-base font-black text-slate-900 group-hover:text-red-600 transition-colors line-clamp-1">
             {trip.name}
           </h3>
 
-          <p className="text-xs text-slate-600 dark:text-neutral-400 mt-1 line-clamp-2">
+          <p className="text-xs text-slate-600 mt-1 line-clamp-2">
             Inclusions: {trip.inclusions.slice(0, 3).join(', ')}...
           </p>
         </div>
 
         {/* Live Telemetry Info Box if Live */}
         {isLive && telemetry ? (
-          <div className="bg-red-50 dark:bg-neutral-900 border border-red-200 dark:border-red-900/50 p-3 rounded-2xl space-y-1.5">
+          <div className="bg-rose-50 border border-rose-200 p-3 rounded-2xl space-y-1.5">
             <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-red-600 dark:text-red-400 flex items-center gap-1">
+              <span className="text-red-600 flex items-center gap-1">
                 <Radio className="w-3.5 h-3.5 animate-pulse" /> Next: {telemetry.nextCheckpointName}
               </span>
-              <span className="text-slate-700 dark:text-neutral-300 font-mono text-[11px]">{telemetry.speedKmH} km/h</span>
+              <span className="text-slate-700 font-mono text-[11px]">{telemetry.speedKmH} km/h</span>
             </div>
-            <div className="text-[11px] text-slate-600 dark:text-neutral-400 flex items-center justify-between font-mono">
+            <div className="text-[11px] text-slate-600 flex items-center justify-between font-mono">
               <span>ETA: {telemetry.etaNextCheckpoint}</span>
-              <span className="text-red-600 dark:text-red-500 font-bold">Live GPS Active</span>
+              <span className="text-red-600 font-bold">Live GPS Active</span>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-neutral-900 p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800">
+          <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
             <div>
-              <span className="text-[10px] text-slate-500 dark:text-neutral-500 font-bold uppercase block">Vehicle</span>
-              <span className="text-slate-900 dark:text-neutral-200 font-bold truncate block">{trip.vehicle.type}</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase block">Vehicle</span>
+              <span className="text-slate-900 font-bold truncate block">{trip.vehicle.type}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 dark:text-neutral-500 font-bold uppercase block">Departure</span>
-              <span className="text-slate-900 dark:text-neutral-200 font-bold truncate block">
+              <span className="text-[10px] text-slate-500 font-bold uppercase block">Departure</span>
+              <span className="text-slate-900 font-bold truncate block">
                 {new Date(trip.departureDateTime).toLocaleDateString([], { month: 'short', day: 'numeric' })}
               </span>
             </div>
@@ -118,15 +118,15 @@ export default function TripCard({ trip, telemetry, onTrackLive, onViewDetails, 
         {/* Seat Availability Bar */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs font-bold">
-            <span className="text-slate-600 dark:text-neutral-400 flex items-center gap-1">
+            <span className="text-slate-600 flex items-center gap-1">
               <Users className="w-3.5 h-3.5 text-red-500" /> Seats Left:
             </span>
-            <span className="text-red-600 dark:text-red-500 font-mono font-black">
+            <span className="text-red-600 font-mono font-black">
               {trip.availableSeats} / {trip.totalSeats}
             </span>
           </div>
 
-          <div className="w-full h-2 bg-slate-200 dark:bg-neutral-900 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
             <div
               className="h-full bg-red-600 rounded-full transition-all duration-500"
               style={{ width: `${((trip.totalSeats - trip.availableSeats) / trip.totalSeats) * 100}%` }}
@@ -135,10 +135,10 @@ export default function TripCard({ trip, telemetry, onTrackLive, onViewDetails, 
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-900">
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
           <button
             onClick={() => onViewDetails(trip)}
-            className="w-1/2 py-2.5 rounded-xl bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 font-bold text-xs transition"
+            className="w-1/2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-bold text-xs transition"
           >
             View Details
           </button>

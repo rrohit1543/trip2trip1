@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ThemePreference } from '../types';
 
 interface ThemeContextType {
-  theme: 'light' | 'dark';
+  theme: 'light';
   preference: ThemePreference;
   setPreference: (pref: ThemePreference) => void;
   toggleTheme: () => void;
@@ -14,52 +14,29 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>('light');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    // Read stored preference or default to light mode (White & Red theme)
-    const stored = localStorage.getItem('trip2trip_theme_pref') as ThemePreference | null;
-    if (stored) {
-      setPreferenceState(stored);
-    } else {
-      setPreferenceState('light');
-    }
+    // Force clean light mode (Pure White & Red theme)
+    localStorage.setItem('trip2trip_theme_pref', 'light');
+    const root = document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
   }, []);
 
-  useEffect(() => {
-    // Resolve preference
-    let activeTheme: 'light' | 'dark' = 'light';
-    if (preference === 'system') {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      activeTheme = prefersDark ? 'dark' : 'light';
-    } else {
-      activeTheme = preference;
-    }
-
-    setResolvedTheme(activeTheme);
-
-    const root = document.documentElement;
-    if (activeTheme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    }
-  }, [preference]);
-
   const setPreference = (pref: ThemePreference) => {
-    setPreferenceState(pref);
-    localStorage.setItem('trip2trip_theme_pref', pref);
+    setPreferenceState('light');
+    localStorage.setItem('trip2trip_theme_pref', 'light');
+    const root = document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
   };
 
   const toggleTheme = () => {
-    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
-    setPreference(nextTheme);
+    setPreference('light');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme: resolvedTheme, preference, setPreference, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: 'light', preference: 'light', setPreference, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
