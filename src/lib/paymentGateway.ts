@@ -1,8 +1,8 @@
 /**
  * TripMandi - Dynamic UPI & QR Payment Gateway Provider Engine
- * Supports Razorpay, PhonePe, and Cashfree API standards with:
+ * Supports Razorpay, PhonePe, Paytm, and Cashfree API standards with:
  * 1. Order Creation
- * 2. Dynamic UPI QR String Generation
+ * 2. Dynamic UPI QR String Generation (Target VPA: paytm.s2fhsqm@pty)
  * 3. Deep-link UPI Intent URLs (GPay, PhonePe, Paytm, BHIM)
  * 4. HMAC Webhook Signature Validation
  * 5. Idempotent Transaction Persistence
@@ -12,8 +12,8 @@ import crypto from 'crypto';
 import { ITransactionEntity, PaymentStatusType, PaymentMethodType } from './models';
 
 // Gateway Credentials & Configuration
-const MERCHANT_VPA = process.env.MERCHANT_VPA || 'tripmandi.nodal@icici';
-const MERCHANT_NAME = process.env.MERCHANT_NAME || 'TripMandi Nodal Escrow';
+const MERCHANT_VPA = process.env.MERCHANT_VPA || 'paytm.s2fhsqm@pty';
+const MERCHANT_NAME = process.env.MERCHANT_NAME || 'TripMandi Travel Solutions';
 const GATEWAY_SECRET = process.env.RAZORPAY_KEY_SECRET || process.env.PHONEPE_SALT_KEY || 'tripmandi_webhook_secret_key_2026';
 
 // Persistent Transaction Store
@@ -69,7 +69,7 @@ export function generateDynamicUPIQR(params: {
 }
 
 /**
- * 3. Create Gateway Payment Order (Razorpay / PhonePe / Cashfree API format)
+ * 3. Create Gateway Payment Order (Razorpay / PhonePe / Paytm / Cashfree format)
  */
 export async function createGatewayOrder(params: {
   userId: string;
@@ -82,6 +82,7 @@ export async function createGatewayOrder(params: {
   gatewayOrderId: string;
   qrCodeString: string;
   upiIntentUrl: string;
+  upiId: string;
   deepLinks: { gpay: string; phonePe: string; paytm: string };
   razorpayOptions?: Record<string, any>;
 }> {
@@ -132,6 +133,7 @@ export async function createGatewayOrder(params: {
     gatewayOrderId,
     qrCodeString,
     upiIntentUrl: deepLinks.genericIntentUrl,
+    upiId: MERCHANT_VPA,
     deepLinks: {
       gpay: deepLinks.gpayUrl,
       phonePe: deepLinks.phonePeUrl,
@@ -198,7 +200,7 @@ export function processPaymentWebhook(payload: {
       amount: rawPayload.amount || 0,
       currency: 'INR',
       paymentMethod: (paymentMethod as any) || 'UPI_QR',
-      vpa,
+      vpa: vpa || MERCHANT_VPA,
       status: event === 'payment.captured' || event === 'PAYMENT_SUCCESS' ? 'SUCCESS' : 'FAILED',
       rawResponse: rawPayload,
       createdAt: new Date().toISOString(),
