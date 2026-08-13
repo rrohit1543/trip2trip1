@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { OperatorKYC, Trip, LiveTelemetry, Booking, User, SecurityEvent, CommissionRule, PaymentSplitLedger, SupportTicket, AccountStatus, UserRole } from '../../types';
 import GlobalFleetMap from '../map/GlobalFleetMap';
-import { ShieldAlert, Radio, CheckCircle2, XCircle, Users, Bus, FileText, Lock, ShieldCheck, Clock, Percent, DollarSign, LifeBuoy, ArrowRight, Save, UserCheck, UserX, Key, Shield } from 'lucide-react';
+import SeatLayoutEditor from './SeatLayoutEditor';
+import { ShieldAlert, Radio, CheckCircle2, XCircle, Users, Bus, FileText, Lock, ShieldCheck, Clock, Percent, DollarSign, LifeBuoy, ArrowRight, Save, UserCheck, UserX, Key, Shield, Zap } from 'lucide-react';
 
 interface AdminDashboardProps {
   operatorKYC: OperatorKYC[];
@@ -38,7 +39,7 @@ export default function AdminDashboard({
   onUpdateUserRole,
   onSelectTripToTrack,
 }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'radar' | 'user_management' | 'kyc' | 'commission_engine' | 'split_ledger' | 'security_logs'>('user_management');
+  const [activeTab, setActiveTab] = useState<'radar' | 'seat_layout' | 'user_management' | 'kyc' | 'commission_engine' | 'split_ledger' | 'security_logs'>('seat_layout');
   const [selectedKYC, setSelectedKYC] = useState<OperatorKYC | null>(operatorKYC[0] || null);
 
   // User Search & Role Filters
@@ -84,7 +85,7 @@ export default function AdminDashboard({
           </div>
           <h1 className="text-3xl md:text-4xl font-black text-slate-900">Platform Owner Control & RBAC Center</h1>
           <p className="text-xs text-slate-500 max-w-2xl">
-            User management table, Google OAuth admin session validation, dynamic commission rule engine, nodal escrow split ledgers, and OWASP audit logs.
+            RedBus visual seat pricing matrix editor, Google OAuth admin session validation, dynamic surge pricing rules, and nodal escrow split ledgers.
           </p>
         </div>
 
@@ -103,6 +104,16 @@ export default function AdminDashboard({
 
       {/* Navigation Sub-Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab('seat_layout')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+            activeTab === 'seat_layout' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <Zap className="w-4 h-4" />
+          <span>Dynamic Seat Pricing Matrix</span>
+        </button>
+
         <button
           onClick={() => setActiveTab('user_management')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
@@ -163,6 +174,11 @@ export default function AdminDashboard({
           <span>OWASP Audit Trail</span>
         </button>
       </div>
+
+      {/* TAB 0: REDBUS DYNAMIC SEAT LAYOUT EDITOR */}
+      {activeTab === 'seat_layout' && (
+        <SeatLayoutEditor tripId={trips[0]?.id || 'trip_demo_1'} />
+      )}
 
       {/* TAB 1: ADMIN USER MANAGEMENT TABULAR DASHBOARD */}
       {activeTab === 'user_management' && (
