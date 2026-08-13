@@ -162,7 +162,7 @@ export default function SeatLayoutEditor({ tripId = 'trip_demo_1', onSaveLayout 
           <div className="inline-flex items-center gap-2 bg-red-600/10 text-red-600 border border-red-600/30 text-xs font-bold px-3 py-1 rounded-full uppercase mb-1">
             <Zap className="w-3.5 h-3.5" /> Interactive Seat Pricing & Layout Matrix
           </div>
-          <h2 className="text-2xl font-black text-slate-900">RedBus Vehicle Seat Pricing Editor</h2>
+          <h2 className="text-2xl font-black text-slate-900">Vehicle Seat Pricing Editor</h2>
           <p className="text-xs text-slate-500">Configure visual seat maps, individual price overrides, female-only seats, and dynamic occupancy surge rules.</p>
         </div>
 
