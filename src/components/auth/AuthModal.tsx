@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserRole } from '../../types';
-import { X, Lock, Mail, Phone, ShieldCheck, KeyRound, ArrowRight, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, Lock, Mail, Phone, ShieldCheck, KeyRound, ArrowRight, RefreshCw, AlertCircle, CheckCircle2, Users, Building2, Shield } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,8 +30,8 @@ export default function AuthModal({
 
   // Form Fields
   const [name, setName] = useState('');
-  const [identifier, setIdentifier] = useState(''); // Mobile or Email
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState('rahul.sharma@example.com'); // Mobile or Email
+  const [password, setPassword] = useState('password123');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otpCode, setOtpCode] = useState('');
 
@@ -49,6 +49,21 @@ export default function AuthModal({
     }
     return () => clearInterval(interval);
   }, [mode, timerSeconds]);
+
+  const handleRoleSelect = (selectedRole: UserRole) => {
+    setRole(selectedRole);
+    setAlert(null);
+    if (selectedRole === 'customer') {
+      setIdentifier('rahul.sharma@example.com');
+      setPassword('password123');
+    } else if (selectedRole === 'operator') {
+      setIdentifier('vikram@himalayanyatra.com');
+      setPassword('operator123');
+    } else if (selectedRole === 'admin') {
+      setIdentifier('admin@tripmandi.com');
+      setPassword('AdminPass2026!');
+    }
+  };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,9 +217,55 @@ export default function AuthModal({
 
         {/* FORM MODES */}
         <div className="p-6 space-y-4 bg-white text-slate-900">
-          {/* 1. LOGIN MODE */}
+          {/* 1. LOGIN MODE WITH 3-WAY ROLE SELECTOR */}
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
+              
+              {/* 3-Way Role Selector */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Select Account Role</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleRoleSelect('customer')}
+                    className={`p-2 rounded-xl border text-[11px] font-extrabold flex flex-col items-center gap-1 transition ${
+                      role === 'customer'
+                        ? 'border-red-600 bg-rose-50 text-red-600 shadow-sm'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Customer</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRoleSelect('operator')}
+                    className={`p-2 rounded-xl border text-[11px] font-extrabold flex flex-col items-center gap-1 transition ${
+                      role === 'operator'
+                        ? 'border-red-600 bg-rose-50 text-red-600 shadow-sm'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>Operator</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRoleSelect('admin')}
+                    className={`p-2 rounded-xl border text-[11px] font-extrabold flex flex-col items-center gap-1 transition ${
+                      role === 'admin'
+                        ? 'border-red-600 bg-rose-50 text-red-600 shadow-sm'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Admin</span>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                   Email Address or Mobile Number
@@ -253,7 +314,7 @@ export default function AuthModal({
                 type="submit"
                 className="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shadow-lg shadow-red-600/30 transition flex items-center justify-center gap-2"
               >
-                <span>Sign In to Account</span>
+                <span>Sign In as {role.toUpperCase()}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
@@ -344,7 +405,7 @@ export default function AuthModal({
             </form>
           )}
 
-          {/* 3. OTP VERIFICATION MODE (PURE WHITE CARD) */}
+          {/* 3. OTP VERIFICATION MODE */}
           {mode === 'otp_verify' && (
             <form onSubmit={handleVerifyOTPSubmit} className="space-y-4 text-center">
               <div className="w-12 h-12 rounded-2xl bg-red-600/10 border border-red-600 flex items-center justify-center mx-auto text-red-600">
