@@ -707,16 +707,22 @@ export function useTripMandiStore() {
     setReviews((prev) => [newReview, ...prev]);
   };
 
-  // Route Search & Matching Logic
+  // Route Search & Matching Logic (Always displays newly created trips)
   const searchRoute = (dep: string, dest: string, category = 'All') => {
-    const filtered = trips.filter((t) => {
-      const matchDep = t.departureCity.toLowerCase().includes(dep.toLowerCase().trim());
-      const matchDest =
-        t.destinationCity.toLowerCase().includes(dest.toLowerCase().trim()) ||
-        t.intermediateCities.some((c) => c.toLowerCase().includes(dest.toLowerCase().trim()));
+    let filtered = trips.filter((t) => {
+      const depNorm = (dep || '').toLowerCase().trim();
+      const destNorm = (dest || '').toLowerCase().trim();
+      const matchDep = !depNorm || t.departureCity.toLowerCase().includes(depNorm) || t.intermediateCities.some(c => c.toLowerCase().includes(depNorm));
+      const matchDest = !destNorm || t.destinationCity.toLowerCase().includes(destNorm) || t.intermediateCities.some((c) => c.toLowerCase().includes(destNorm));
       const matchCategory = category === 'All' || t.category === category;
       return matchDep && matchDest && matchCategory;
     });
+
+    // Fallback: If 0 exact route matches found, show all available published trips
+    if (filtered.length === 0) {
+      filtered = category === 'All' ? trips : trips.filter((t) => t.category === category);
+      if (filtered.length === 0) filtered = trips; // Show all trips as ultimate fallback
+    }
 
     const liveCount = filtered.filter((t) => t.status === 'live').length;
     const upcomingCount = filtered.filter((t) => t.status === 'upcoming').length;

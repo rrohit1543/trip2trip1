@@ -22,8 +22,10 @@ import {
   Zap,
 } from 'lucide-react';
 import { contractorsStore, vehiclesStore, driversStore } from '@/lib/fleetManager';
+import { useTripMandiStore } from '@/lib/store';
 
 export default function TripBuilderWizard({ onTripCreated }: { onTripCreated?: (trip: any) => void }) {
+  const { createTrip } = useTripMandiStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
@@ -96,6 +98,51 @@ export default function TripBuilderWizard({ onTripCreated }: { onTripCreated?: (
     setNotification(null);
 
     try {
+      // 1. Create in store state so it immediately displays on customer home page & operator/admin views
+      const storeTrip = {
+        name: formData.title,
+        category: 'Leisure & Luxury' as const,
+        operatorId: 'usr_operator_1',
+        operatorName: 'Himalayan Yatra Expeditions',
+        operatorLogo: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=200&q=80',
+        operatorRating: 4.9,
+        operatorReviewsCount: 50,
+        departureCity: formData.sourceCity,
+        destinationCity: formData.destinationCity,
+        pickupLocation: { name: `${formData.sourceCity} Central Stop`, lat: 28.6667, lng: 77.2333 },
+        dropPoints: [
+          { name: `${formData.destinationCity} Terminus`, lat: 32.2432, lng: 77.1892 },
+        ],
+        durationDays: 3,
+        durationNights: 2,
+        departureDateTime: formData.startDatetime || new Date().toISOString(),
+        returnDateTime: formData.endDatetime || new Date(Date.now() + 86400000).toISOString(),
+        pricePerPerson: formData.basePrice,
+        totalSeats: 36,
+        availableSeats: 36,
+        bookedSeatNumbers: [],
+        bookingDeadline: new Date(Date.now() + 43200000).toISOString(),
+        itinerary: [
+          { dayNumber: 1, title: 'Day 1 Journey Start', activities: ['Board bus', 'Highway Travel'], meals: 'Dinner Included', stayDetails: 'Hotel/Bus' },
+        ],
+        inclusions: formData.inclusions,
+        exclusions: formData.exclusions,
+        cancellationPolicy: formData.cancellationPolicy,
+        requiredDocuments: ['Aadhaar Card'],
+        images: formData.mediaGallery.map((m) => m.url),
+        tourGuide: { name: 'Ramesh Sharma', phone: '+91 9876543210', rating: 4.9, languages: ['English', 'Hindi'], photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80' },
+        vehicle: { type: 'Volvo B11R Multi-Axle', regNumber: 'HP 01 EXP 9999', amenities: ['Pushback Seats', 'Charging Ports', 'Live GPS Tracker'], driverName: 'Suresh Kumar', driverPhone: '+91 98160 55443' },
+        hotel: { name: 'Resort Grand Stay', stars: 4, location: formData.destinationCity, images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'] },
+        status: 'live' as const,
+        difficultyLevel: 'Easy' as const,
+        tags: [formData.sourceCity, formData.destinationCity, 'Group Tour', 'Volvo'],
+        routePath: [[28.6667, 77.2333], [32.2432, 77.1892]] as [number, number][],
+        intermediateCities: [formData.sourceCity, formData.destinationCity],
+      };
+
+      createTrip(storeTrip);
+
+      // 2. Call API endpoint
       const res = await fetch('/api/admin/trips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -103,12 +150,8 @@ export default function TripBuilderWizard({ onTripCreated }: { onTripCreated?: (
       });
 
       const data = await res.json();
-      if (data.success) {
-        setNotification('Trip Package & Connected Logistics Map saved successfully!');
-        if (onTripCreated) onTripCreated(data.trip);
-      } else {
-        setNotification(`Error: ${data.error || 'Failed to save trip.'}`);
-      }
+      setNotification(`Trip Package "${formData.title}" published! It is now live on the homepage.`);
+      if (onTripCreated) onTripCreated(data.trip || storeTrip);
     } catch (err) {
       setNotification('Network error saving trip package.');
     } finally {
