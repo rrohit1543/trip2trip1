@@ -58,9 +58,9 @@ export default function Footer() {
         <div className="space-y-3">
           <h4 className="text-sm font-black text-white uppercase tracking-wider">Contact TripMandi</h4>
           <p><strong>Headquarters:</strong> TripMandi Hub, Sector 62, Noida, NCR Delhi, India</p>
-          <p><strong>WhatsApp Support:</strong> +91 98765 43210</p>
-          <p><strong>Direct Call Line:</strong> +91 98765 43210</p>
-          <p><strong>Official Email:</strong> support@tripmandi.com</p>
+          <p><strong>WhatsApp Support:</strong> +91 81685 61817</p>
+          <p><strong>Direct Call Line:</strong> +91 81685 61817</p>
+          <p><strong>Official Email:</strong> tripmandi.official@gmail.com</p>
           <div className="pt-2 flex items-center gap-1 text-[11px] text-slate-500">
             <span>Made with</span> <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline" /> <span>in India for Travelers</span>
           </div>

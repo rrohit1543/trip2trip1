@@ -12,34 +12,34 @@ export default function SocialChannelsBar() {
             <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">24/7 SUPPORT HUB</span>
             <h4 className="text-base font-black text-white">Need Help With Your Booking?</h4>
           </div>
-          <p className="text-xs text-slate-400">Connect with TripMandi customer desk via WhatsApp, Phone Call, Gmail, or Instagram (@TRIPMANDI_OFFICIAL).</p>
+          <p className="text-xs text-slate-400">Connect with TripMandi customer desk via WhatsApp, Phone Call, Gmail (tripmandi.official@gmail.com), or Instagram (@TRIPMANDI_OFFICIAL).</p>
         </div>
 
         {/* Channels Grid with Icons */}
         <div className="flex flex-wrap items-center justify-center gap-3">
-          {/* WhatsApp */}
+          {/* WhatsApp: 8168561817 */}
           <a
-            href="https://wa.me/919876543210?text=Hi%20TripMandi%20Support,%20I%20need%20help%20with%20my%20booking"
+            href="https://wa.me/918168561817?text=Hi%20TripMandi%20Support,%20I%20need%20help%20with%20my%20booking"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition active:scale-95"
           >
             <MessageSquare className="w-4 h-4 fill-white" />
-            <span>WhatsApp</span>
+            <span>WhatsApp (8168561817)</span>
           </a>
 
-          {/* Direct Call */}
+          {/* Direct Call: 8168561817 */}
           <a
-            href="tel:+919876543210"
+            href="tel:+918168561817"
             className="bg-red-600 hover:bg-red-700 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition active:scale-95"
           >
             <PhoneCall className="w-4 h-4" />
-            <span>Call Support</span>
+            <span>Call (+91 8168561817)</span>
           </a>
 
-          {/* Gmail */}
+          {/* Gmail: tripmandi.official@gmail.com */}
           <a
-            href="mailto:support@tripmandi.com?subject=Booking%20Inquiry%20-%20TripMandi"
+            href="mailto:tripmandi.official@gmail.com?subject=Booking%20Inquiry%20-%20TripMandi"
             className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 transition"
           >
             <Mail className="w-4 h-4 text-red-500" />

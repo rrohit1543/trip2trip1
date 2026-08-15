@@ -2,7 +2,7 @@
  * TripMandi - Dynamic UPI & QR Payment Gateway Provider Engine
  * Supports Razorpay, PhonePe, Paytm, and Cashfree API standards with:
  * 1. Order Creation
- * 2. Dynamic UPI QR String Generation (Target VPA: paytm.s2fhsqm@pty)
+ * 2. Dynamic UPI QR String Generation (Target VPA: 8168561817@ybl)
  * 3. Deep-link UPI Intent URLs (GPay, PhonePe, Paytm, BHIM)
  * 4. HMAC Webhook Signature Validation
  * 5. Idempotent Transaction Persistence
@@ -12,7 +12,7 @@ import crypto from 'crypto';
 import { ITransactionEntity, PaymentStatusType, PaymentMethodType } from './models';
 
 // Gateway Credentials & Configuration
-const MERCHANT_VPA = process.env.MERCHANT_VPA || 'paytm.s2fhsqm@pty';
+const MERCHANT_VPA = process.env.MERCHANT_VPA || '8168561817@ybl';
 const MERCHANT_NAME = process.env.MERCHANT_NAME || 'TripMandi Travel Solutions';
 const GATEWAY_SECRET = process.env.RAZORPAY_KEY_SECRET || process.env.PHONEPE_SALT_KEY || 'tripmandi_webhook_secret_key_2026';
 
@@ -140,7 +140,7 @@ export async function createGatewayOrder(params: {
       paytm: deepLinks.paytmUrl,
     },
     razorpayOptions: {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_tripmandi2026',
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_tripmandi2026',
       amount: amount * 100, // paise
       currency,
       name: 'TripMandi Travel Solutions',

@@ -24,7 +24,7 @@ export default function DynamicUPIPaymentModal({
 
   const [gatewayOrderId, setGatewayOrderId] = useState<string | null>(null);
   const [qrCodeString, setQrCodeString] = useState<string>('');
-  const [upiId, setUpiId] = useState<string>('paytm.s2fhsqm@pty');
+  const [upiId, setUpiId] = useState<string>('8168561817@ybl');
   const [deepLinks, setDeepLinks] = useState<{ gpay: string; phonePe: string; paytm: string } | null>(null);
   const [status, setStatus] = useState<'INITIALIZING' | 'PENDING' | 'SUCCESS' | 'FAILED'>('INITIALIZING');
   
@@ -144,11 +144,11 @@ export default function DynamicUPIPaymentModal({
         {/* Header */}
         <div className="p-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-600 font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-600 font-bold">
               <QrCode className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-slate-900">Paytm & UPI QR Payment</h3>
+              <h3 className="text-lg font-black text-slate-900">PhonePe & UPI QR Payment</h3>
               <p className="text-xs text-slate-500 font-mono">Booking #{bookingId}</p>
             </div>
           </div>
@@ -159,9 +159,9 @@ export default function DynamicUPIPaymentModal({
         </div>
 
         {/* Payment Amount Card */}
-        <div className="p-4 bg-sky-50 border-b border-sky-200 flex items-center justify-between text-slate-900">
+        <div className="p-4 bg-purple-50 border-b border-purple-200 flex items-center justify-between text-slate-900">
           <div>
-            <span className="text-[10px] text-sky-700 uppercase font-black tracking-wider block">Total Payable Amount</span>
+            <span className="text-[10px] text-purple-700 uppercase font-black tracking-wider block">Total Payable Amount</span>
             <span className="text-2xl font-black text-slate-900">₹{amount.toLocaleString('en-IN')}</span>
           </div>
           <div className="text-right">
@@ -173,35 +173,34 @@ export default function DynamicUPIPaymentModal({
         <div className="p-6 space-y-5 text-center">
           {status === 'INITIALIZING' && (
             <div className="py-12 space-y-3">
-              <RefreshCw className="w-8 h-8 text-sky-600 animate-spin mx-auto" />
-              <p className="text-xs font-bold text-slate-600">Generating Paytm UPI QR & Payment Order...</p>
+              <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mx-auto" />
+              <p className="text-xs font-bold text-slate-600">Generating PhonePe UPI QR & Payment Order...</p>
             </div>
           )}
 
           {status === 'PENDING' && (
             <div className="space-y-5">
               
-              {/* OFFICIAL PAYTM QR CODE DISPLAY */}
-              <div className="bg-slate-50 border-2 border-sky-300 rounded-3xl p-4 shadow-md space-y-3">
-                <div className="relative mx-auto w-52 h-52 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center p-2">
+              {/* OFFICIAL PHONEPE QR CODE DISPLAY */}
+              <div className="bg-slate-50 border-2 border-purple-300 rounded-3xl p-4 shadow-md space-y-3">
+                <div className="relative mx-auto w-56 h-56 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center p-2">
                   <img
-                    src="/paytm_qr.jpg"
-                    alt="Official Paytm QR Code - paytm.s2fhsqm@pty"
+                    src="/phonepe_qr.png"
+                    alt="Official PhonePe QR Code - 8168561817@ybl"
                     className="w-full h-full object-contain rounded-xl"
                   />
                 </div>
 
                 {/* Prominent UPI ID Box with 1-Click Copy */}
-                <div className="bg-white border border-sky-200 rounded-2xl p-3 flex items-center justify-between gap-2 shadow-sm">
+                <div className="bg-white border border-purple-200 rounded-2xl p-3 flex items-center justify-between gap-2 shadow-sm">
                   <div className="text-left font-mono">
                     <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Merchant UPI ID</span>
-                    <span className="text-xs font-black text-sky-900 select-all">{upiId}</span>
+                    <span className="text-xs font-black text-purple-900 select-all">{upiId}</span>
                   </div>
 
                   <button
-                    type="button"
                     onClick={handleCopyUpiId}
-                    className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold flex items-center gap-1 transition active:scale-95 cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-sm"
                   >
                     {copiedUpi ? (
                       <>
@@ -218,89 +217,77 @@ export default function DynamicUPIPaymentModal({
                 </div>
               </div>
 
-              <p className="text-xs text-slate-600">
-                Scan this Paytm QR code or transfer to <strong className="text-slate-900 font-mono">{upiId}</strong> using GPay, PhonePe, Paytm, or BHIM.
-              </p>
-
-              {/* MOBILE VIEW: Deep-Link UPI Intent Buttons */}
+              {/* Mobile Deep-Link Payment Intent Buttons */}
               {deepLinks && (
-                <div className="space-y-2 border-t border-slate-200 pt-3">
-                  <span className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wider block">
-                    Mobile Direct UPI Intent Apps
-                  </span>
+                <div className="space-y-2 pt-2">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Pay via Mobile Installed App</span>
                   <div className="grid grid-cols-3 gap-2">
                     <a
-                      href={deepLinks.paytm}
-                      className="p-2.5 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-2xl text-xs font-black text-sky-900 flex items-center justify-center gap-1.5 transition active:scale-95"
+                      href={deepLinks.phonePe}
+                      className="py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-black rounded-xl transition flex items-center justify-center gap-1 shadow-sm"
                     >
-                      <Smartphone className="w-4 h-4 text-sky-600" />
-                      <span>Paytm</span>
+                      <Smartphone className="w-3.5 h-3.5" /> PhonePe
                     </a>
-
                     <a
                       href={deepLinks.gpay}
-                      className="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 flex items-center justify-center gap-1.5 transition active:scale-95"
+                      className="py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl transition flex items-center justify-center gap-1 shadow-sm"
                     >
-                      <Smartphone className="w-4 h-4 text-emerald-600" />
-                      <span>GPay</span>
+                      <Smartphone className="w-3.5 h-3.5" /> GPay
                     </a>
-
                     <a
-                      href={deepLinks.phonePe}
-                      className="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 flex items-center justify-center gap-1.5 transition active:scale-95"
+                      href={deepLinks.paytm}
+                      className="py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-black rounded-xl transition flex items-center justify-center gap-1 shadow-sm"
                     >
-                      <Smartphone className="w-4 h-4 text-purple-600" />
-                      <span>PhonePe</span>
+                      <Smartphone className="w-3.5 h-3.5" /> Paytm
                     </a>
                   </div>
                 </div>
               )}
 
-              {/* Live Polling Status Indicator & Dev Simulator */}
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <RefreshCw className="w-4 h-4 animate-spin text-sky-600" />
-                  <span className="font-bold">Awaiting Payment Confirmation...</span>
-                </div>
+              {/* Real-time status indicator */}
+              <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-600 pt-2 border-t border-slate-100">
+                <RefreshCw className="w-3.5 h-3.5 text-purple-600 animate-spin" />
+                <span>Waiting for bank confirmation...</span>
+              </div>
 
+              {/* Instant Developer Simulation Button */}
+              <div className="pt-2 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={handleSimulateInstantPay}
-                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase transition cursor-pointer"
+                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl shadow-md transition flex items-center justify-center gap-1.5"
                 >
-                  Simulate Paid
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Simulate Successful UPI Payment</span>
                 </button>
               </div>
             </div>
           )}
 
           {status === 'SUCCESS' && (
-            <div className="py-8 space-y-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-500 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
+            <div className="py-8 space-y-4">
+              <div className="w-16 h-16 bg-emerald-100 border border-emerald-300 rounded-full flex items-center justify-center mx-auto text-emerald-600">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-xl font-black text-slate-900">Payment Successful!</h4>
-                <p className="text-xs text-slate-500 font-mono">Paid to {upiId}</p>
-                <p className="text-xs text-slate-500 font-mono">Txn ID: {gatewayOrderId}</p>
+                <p className="text-xs text-slate-500">Your ticket booking #{bookingId} has been confirmed.</p>
               </div>
-              <p className="text-xs text-emerald-700 font-bold">Your booking has been confirmed & ticket QR code generated.</p>
             </div>
           )}
 
           {status === 'FAILED' && (
-            <div className="py-8 space-y-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-rose-100 border-2 border-red-500 text-red-600 flex items-center justify-center mx-auto">
+            <div className="py-8 space-y-4">
+              <div className="w-16 h-16 bg-red-100 border border-red-300 rounded-full flex items-center justify-center mx-auto text-red-600">
                 <AlertCircle className="w-10 h-10" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-xl font-black text-slate-900">Payment Failed</h4>
-                <p className="text-xs text-red-600 font-bold">{errorMsg || 'Transaction declined by bank.'}</p>
+                <p className="text-xs text-red-600 font-bold">{errorMsg || 'Unable to process payment.'}</p>
               </div>
               <button
-                type="button"
                 onClick={() => setStatus('INITIALIZING')}
-                className="px-6 py-2.5 bg-red-600 text-white rounded-xl text-xs font-bold shadow-md"
+                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl"
               >
                 Retry Payment
               </button>
