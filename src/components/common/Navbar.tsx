@@ -222,6 +222,91 @@ export default function Navbar({
             </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Sub-Bar (Visible on mobile screens) */}
+        <nav className="flex md:hidden items-center gap-2 overflow-x-auto px-4 py-2.5 border-t border-slate-100 bg-white text-xs font-bold whitespace-nowrap shadow-inner">
+          <Link
+            href="/"
+            onClick={() => setActiveTab('explore')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+              activeTab === 'explore'
+                ? 'bg-red-600 text-white shadow-md font-black'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200'
+            }`}
+          >
+            <Bus className="w-3.5 h-3.5" />
+            <span>Group Trips</span>
+          </Link>
+
+          <Link
+            href="/"
+            onClick={() => setActiveTab('live-radar')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+              activeTab === 'live-radar'
+                ? 'bg-red-600 text-white shadow-md font-black'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200'
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5 text-red-600 animate-pulse" />
+            <span>Fleet Radar</span>
+          </Link>
+
+          <Link
+            href="/support"
+            onClick={() => setActiveTab('support')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+              activeTab === 'support'
+                ? 'bg-red-600 text-white shadow-md font-black'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200'
+            }`}
+          >
+            <LifeBuoy className="w-3.5 h-3.5" />
+            <span>Help & Support</span>
+          </Link>
+
+          <Link
+            href="/admin/dashboard"
+            onClick={() => setActiveTab('admin-dash')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+              activeTab === 'admin-dash'
+                ? 'bg-red-600 text-white shadow-md font-black'
+                : 'text-red-700 bg-red-50 border border-red-200 hover:bg-red-100'
+            }`}
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+            <span>Super Admin Portal</span>
+          </Link>
+
+          {currentUser?.role === 'customer' && (
+            <Link
+              href="/passenger/dashboard"
+              onClick={() => setActiveTab('passenger-dash')}
+              className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+                activeTab === 'passenger-dash'
+                  ? 'bg-red-600 text-white shadow-md font-black'
+                  : 'text-slate-700 bg-slate-100'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              <span>My Bookings</span>
+            </Link>
+          )}
+
+          {currentUser?.role === 'operator' && (
+            <Link
+              href="/operator/dashboard"
+              onClick={() => setActiveTab('operator-dash')}
+              className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+                activeTab === 'operator-dash'
+                  ? 'bg-red-600 text-white shadow-md font-black'
+                  : 'text-slate-700 bg-slate-100'
+              }`}
+            >
+              <Bus className="w-3.5 h-3.5 text-red-600" />
+              <span>Agency Panel</span>
+            </Link>
+          )}
+        </nav>
       </header>
     </div>
   );
