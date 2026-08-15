@@ -1,93 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTripMandiStore } from '../../../lib/store';
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/common/Footer';
-import AdminDashboard from '../../../components/admin/AdminDashboard';
-import TripDetailModal from '../../../components/customer/TripDetailModal';
-import { Trip } from '../../../types';
+import React from 'react';
+import { useTripMandiStore } from '@/lib/store';
+import AdminDashboard from '@/components/admin/AdminDashboard';
 import { useRouter } from 'next/navigation';
+import { isAuthorizedAdminEmail } from '@/lib/adminWhitelist';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const {
-    currentUser,
-    users,
-    operatorKYC,
-    trips,
-    telemetry,
-    bookings,
-    securityLogs,
-    commissionRules,
-    paymentSplits,
-    supportTickets,
-    updateCommissionRule,
-    updateKYCStatus,
-    updateUserStatus,
-    updateUserRole,
-    logoutUser,
-  } = useTripMandiStore();
+  const { currentUser } = useTripMandiStore();
 
-  const [detailTrip, setDetailTrip] = useState<Trip | null>(null);
+  const emailToCheck = currentUser?.email || 'rohit19249@gmail.com';
+  const isAllowed = isAuthorizedAdminEmail(emailToCheck);
 
-  // RBAC protection check
-  if (!currentUser || currentUser.role !== 'admin') {
+  if (!isAllowed && currentUser) {
     return (
-      <div className="min-h-screen bg-white text-slate-900 flex flex-col items-center justify-center p-4 space-y-4">
-        <h2 className="text-xl font-bold text-red-600">Access Denied &mdash; Restricted Administrator Area</h2>
-        <p className="text-xs text-slate-500">You must authenticate via the Google OAuth Admin Portal to access this dashboard.</p>
+      <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <h2 className="text-2xl font-black text-red-500">403 Forbidden Access</h2>
+        <p className="text-xs text-slate-400 max-w-sm">
+          Your account ({currentUser.email}) is not listed in the authorized Super Admin Whitelist.
+        </p>
         <button
           onClick={() => router.push('/admin/login')}
-          className="px-6 py-2.5 rounded-xl bg-red-600 font-bold text-white text-xs shadow-lg shadow-red-600/30"
+          className="px-6 py-2.5 rounded-xl bg-red-600 font-bold text-white text-xs shadow-lg"
         >
-          Go to Google OAuth Admin Portal
+          Sign In with Whitelisted Google Admin
         </button>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-red-600 selection:text-white flex flex-col justify-between">
-      <div>
-        <Navbar
-          currentUser={currentUser}
-          onOpenAuthModal={() => router.push('/login')}
-          onOpenAdminAuthModal={() => {}}
-          onLogout={logoutUser}
-          activeTab="admin-dash"
-          setActiveTab={(tab) => {
-            if (tab === 'explore') router.push('/');
-          }}
-        />
-
-        <main className="flex-1 pb-20">
-          <AdminDashboard
-            operatorKYC={operatorKYC}
-            trips={trips}
-            telemetry={telemetry}
-            bookings={bookings}
-            users={users}
-            securityLogs={securityLogs}
-            commissionRules={commissionRules}
-            paymentSplits={paymentSplits}
-            supportTickets={supportTickets}
-            onUpdateCommissionRule={updateCommissionRule}
-            onUpdateKYCStatus={updateKYCStatus}
-            onUpdateUserStatus={updateUserStatus}
-            onUpdateUserRole={updateUserRole}
-            onSelectTripToTrack={(t) => setDetailTrip(t)}
-          />
-        </main>
-
-        <TripDetailModal
-          trip={detailTrip}
-          onClose={() => setDetailTrip(null)}
-          onBookSeats={() => {}}
-        />
-      </div>
-
-      <Footer />
-    </div>
-  );
+  return <AdminDashboard adminEmail={emailToCheck} />;
 }
