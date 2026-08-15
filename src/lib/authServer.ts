@@ -126,6 +126,10 @@ export function verifyJWT(token: string): JWTPayload | null {
   }
 }
 
+export function verifyAccessToken(token: string): JWTPayload | null {
+  return verifyJWT(token);
+}
+
 /**
  * 5. Google Identity Services (OAuth 2.0) ID Token Verification
  */

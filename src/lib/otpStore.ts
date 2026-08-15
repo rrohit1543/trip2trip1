@@ -1,6 +1,7 @@
 /**
- * TripMandi - Anti-Abuse Rate Limiter & Hashed OTP Storage Engine
- * Enforces SHA-256 OTP Hashing, Rate-Limiting (max 3/10m), and Account Lockout (5 failed attempts).
+ * TripMandi - Production Anti-Abuse Rate Limiter & Cryptographic Hashed OTP Engine
+ * Strictly enforces SHA-256 HMAC OTP Hashing, 5-Minute Expiry TTL, Max 3 Verification Attempts,
+ * Immediate Invalidation upon use/max-attempts, 60-second Resend Cooldown, and Throttling.
  */
 
 import crypto from 'crypto';
@@ -9,10 +10,10 @@ export interface OTPSessionData {
   identifier: string;
   type: 'email' | 'mobile';
   otpHash: string;
-  expiresAt: number; // Timestamp in ms (10-minute TTL)
-  attempts: number; // Counter for anti-bruteforce lockout
+  expiresAt: number; // Timestamp in ms (5-minute TTL)
+  attempts: number; // Counter: Max 3 attempts
   isUsed: boolean;
-  lockoutUntil?: number; // Timestamp if locked out
+  lastRequestedAt: number;
   tempUserData?: Record<string, any>;
 }
 
@@ -21,7 +22,7 @@ const otpStore: Record<string, OTPSessionData> = {};
 const rateLimitRequestLog: Record<string, number[]> = {};
 
 /**
- * SHA-256 Cryptographic Hasher for OTPs (Never store plain-text OTPs)
+ * SHA-256 HMAC Cryptographic Hasher for OTPs (Never store plain-text OTPs)
  */
 export function hashOTPCode(code: string): string {
   const secretSalt = process.env.OTP_SALT || 'tripmandi_otp_hmac_secret_2026';
@@ -29,7 +30,7 @@ export function hashOTPCode(code: string): string {
 }
 
 /**
- * Verify input OTP code against stored SHA-256 hash
+ * Verify input OTP code against stored SHA-256 HMAC hash
  */
 export function verifyOTPHashCode(inputCode: string, storedHash: string): boolean {
   return hashOTPCode(inputCode) === storedHash;
@@ -66,7 +67,29 @@ export function checkOTPRateLimit(identifier: string, maxRequests = 3, windowMs 
 }
 
 /**
- * 2. Save Hashed OTP Entry with 10-minute TTL
+ * 2. Check Resend Cooldown (60 seconds)
+ */
+export function checkResendCooldown(identifier: string, cooldownSec = 60): {
+  canResend: boolean;
+  cooldownRemainingSec?: number;
+} {
+  const key = identifier.toLowerCase().trim();
+  const session = otpStore[key];
+  if (!session) return { canResend: true };
+
+  const elapsed = (Date.now() - session.lastRequestedAt) / 1000;
+  if (elapsed < cooldownSec) {
+    return {
+      canResend: false,
+      cooldownRemainingSec: Math.ceil(cooldownSec - elapsed),
+    };
+  }
+
+  return { canResend: true };
+}
+
+/**
+ * 3. Save Hashed OTP Entry with 5-Minute TTL (Resets attempt counter & invalidates old OTP)
  */
 export function saveOTPEntry(params: {
   identifier: string;
@@ -75,20 +98,21 @@ export function saveOTPEntry(params: {
   ttlMinutes?: number;
   tempUserData?: Record<string, any>;
 }): { otpHash: string; expiresAt: number } {
-  const { identifier, type, otpCode, ttlMinutes = 10, tempUserData } = params;
+  const { identifier, type, otpCode, ttlMinutes = 5, tempUserData } = params;
   const key = identifier.toLowerCase().trim();
   const otpHash = hashOTPCode(otpCode);
-  const expiresAt = Date.now() + ttlMinutes * 60 * 1000;
+  const now = Date.now();
+  const expiresAt = now + ttlMinutes * 60 * 1000;
 
-  const existing = otpStore[key];
-
+  // Invalidate any previous OTP & store clean entry with 0 attempts
   otpStore[key] = {
     identifier: key,
     type,
     otpHash,
     expiresAt,
-    attempts: existing ? existing.attempts : 0, // preserve attempt count if re-requesting
+    attempts: 0, // Reset attempt counter to 0 for new OTP
     isUsed: false,
+    lastRequestedAt: now,
     tempUserData,
   };
 
@@ -96,13 +120,12 @@ export function saveOTPEntry(params: {
 }
 
 /**
- * 3. Lockout Protection: Check & verify OTP with failed attempt tracking (Lockout after 5 fails)
+ * 4. Verify OTP with Strict Attempt Counting (Max 3 attempts, 5-minute TTL)
  */
-export function verifyOTPWithLockout(identifier: string, inputCode: string): {
+export function verifyOTPStrict(identifier: string, inputCode: string): {
   success: boolean;
-  isLockedOut: boolean;
-  lockoutRemainingSec?: number;
   message: string;
+  attemptsRemaining: number;
   session?: OTPSessionData;
 } {
   const key = identifier.toLowerCase().trim();
@@ -110,23 +133,40 @@ export function verifyOTPWithLockout(identifier: string, inputCode: string): {
   const now = Date.now();
 
   if (!session) {
-    return { success: false, isLockedOut: false, message: 'No active OTP verification session found for this contact.' };
-  }
-
-  // Check if account is locked out
-  if (session.lockoutUntil && now < session.lockoutUntil) {
-    const lockoutRemainingSec = Math.ceil((session.lockoutUntil - now) / 1000);
     return {
       success: false,
-      isLockedOut: true,
-      lockoutRemainingSec,
-      message: `Account temporarily locked out due to multiple failed attempts. Please wait ${lockoutRemainingSec} seconds.`,
+      attemptsRemaining: 0,
+      message: 'No active OTP verification session found. Please request a new OTP.',
     };
   }
 
-  // Check Expiry (10-min TTL)
-  if (now > session.expiresAt || session.isUsed) {
-    return { success: false, isLockedOut: false, message: 'OTP code has expired or already been used. Please request a new OTP.' };
+  // Check if already used
+  if (session.isUsed) {
+    return {
+      success: false,
+      attemptsRemaining: 0,
+      message: 'This OTP has already been used. Please request a new OTP.',
+    };
+  }
+
+  // Check Expiry (5-Minute TTL)
+  if (now > session.expiresAt) {
+    session.isUsed = true;
+    return {
+      success: false,
+      attemptsRemaining: 0,
+      message: 'This OTP has expired. Please request a new OTP.',
+    };
+  }
+
+  // Check Max Attempt Limit (3 Attempts)
+  if (session.attempts >= 3) {
+    session.isUsed = true; // Invalidate OTP
+    return {
+      success: false,
+      attemptsRemaining: 0,
+      message: 'Maximum verification attempts reached. Please request a new OTP.',
+    };
   }
 
   // Validate OTP Hash
@@ -134,36 +174,44 @@ export function verifyOTPWithLockout(identifier: string, inputCode: string): {
 
   if (!isMatch) {
     session.attempts += 1;
+    const attemptsRemaining = Math.max(0, 3 - session.attempts);
 
-    // Trigger Lockout after 5 failed attempts
-    if (session.attempts >= 5) {
-      session.lockoutUntil = now + 15 * 60 * 1000; // 15 minute lockout
-      const lockoutRemainingSec = 15 * 60;
+    if (session.attempts >= 3) {
+      session.isUsed = true; // Invalidate immediately on 3rd fail
       return {
         success: false,
-        isLockedOut: true,
-        lockoutRemainingSec,
-        message: 'Maximum 5 verification attempts exceeded. Account locked out for 15 minutes.',
+        attemptsRemaining: 0,
+        message: 'Maximum verification attempts reached. Please request a new OTP.',
       };
     }
 
-    const attemptsLeft = 5 - session.attempts;
     return {
       success: false,
-      isLockedOut: false,
-      message: `Invalid 6-digit OTP code. ${attemptsLeft} verification attempts remaining before lockout.`,
+      attemptsRemaining,
+      message: `Invalid OTP. Please try again. (${attemptsRemaining} ${attemptsRemaining === 1 ? 'attempt' : 'attempts'} remaining)`,
     };
   }
 
-  // Mark session used & reset attempt counter
+  // SUCCESS: Mark used & invalidate immediately
   session.isUsed = true;
-  session.attempts = 0;
-  session.lockoutUntil = undefined;
 
   return {
     success: true,
-    isLockedOut: false,
+    attemptsRemaining: 3 - session.attempts,
     message: 'OTP verified successfully!',
     session,
+  };
+}
+
+/**
+ * Helper to get current session attempt state
+ */
+export function getOTPSessionState(identifier: string): { attempts: number; attemptsRemaining: number } {
+  const key = identifier.toLowerCase().trim();
+  const session = otpStore[key];
+  if (!session || session.isUsed) return { attempts: 0, attemptsRemaining: 3 };
+  return {
+    attempts: session.attempts,
+    attemptsRemaining: Math.max(0, 3 - session.attempts),
   };
 }
