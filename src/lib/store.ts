@@ -609,6 +609,11 @@ export function useTripMandiStore() {
     );
   };
 
+  const deleteTrip = (tripId: string) => {
+    setTrips((prev) => prev.filter((t) => t.id !== tripId));
+    addSecurityLog('TRIP_DELETED', currentUser?.email || 'admin', `Trip ${tripId} deleted by Admin`);
+  };
+
   // Customer Booking Operations with Automated Nodal Payment Split
   const createBooking = (bookingData: Omit<Booking, 'id' | 'bookingDate' | 'qrCodeData'>): Booking => {
     const newBooking: Booking = {
@@ -761,6 +766,7 @@ export function useTripMandiStore() {
     updateKYCStatus,
     createTrip,
     toggleLiveTrip,
+    deleteTrip,
     createBooking,
     addChatMessage,
     addReview,

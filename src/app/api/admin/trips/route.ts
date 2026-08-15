@@ -11,7 +11,6 @@ function generateDefaultSeatLayout(vehicleType: 'BUS' | 'CAR' | 'TRAVELLER', bas
   const seats: any[] = [];
 
   if (vehicleType === 'CAR') {
-    // 7-Seater SUV (Driver, Passenger front, 3 Middle, 2 Rear)
     const carLayout = [
       { seatNumber: 1, label: 'F1', deck: 'LOWER', row: 1, col: 2, type: 'SEATER' },
       { seatNumber: 2, label: 'M1', deck: 'LOWER', row: 2, col: 1, type: 'SEATER' },
@@ -28,7 +27,6 @@ function generateDefaultSeatLayout(vehicleType: 'BUS' | 'CAR' | 'TRAVELLER', bas
   }
 
   if (vehicleType === 'TRAVELLER') {
-    // 12-Seater Traveller (1x2 configuration across 4 rows)
     let seatNo = 1;
     for (let r = 1; r <= 4; r++) {
       seats.push({ seatNumber: seatNo++, label: `T${r}A`, deck: 'LOWER', row: r, col: 1, type: 'SEATER', priceOverride: basePrice, status: 'AVAILABLE' });
@@ -38,9 +36,7 @@ function generateDefaultSeatLayout(vehicleType: 'BUS' | 'CAR' | 'TRAVELLER', bas
     return seats;
   }
 
-  // Default: 36-Seat RedBus 2x1 Sleeper + Seater Bus (Lower Deck Seater 2x2, Upper Deck Sleeper 2x1)
   let seatNo = 1;
-  // Lower Deck: 20 Seater Seats
   for (let r = 1; r <= 5; r++) {
     seats.push({ seatNumber: seatNo++, label: `L${r}A`, deck: 'LOWER', row: r, col: 1, type: 'SEATER', priceOverride: basePrice, status: 'AVAILABLE' });
     seats.push({ seatNumber: seatNo++, label: `L${r}B`, deck: 'LOWER', row: r, col: 2, type: 'SEATER', priceOverride: basePrice, status: 'AVAILABLE' });
@@ -48,7 +44,6 @@ function generateDefaultSeatLayout(vehicleType: 'BUS' | 'CAR' | 'TRAVELLER', bas
     seats.push({ seatNumber: seatNo++, label: `L${r}D`, deck: 'LOWER', row: r, col: 5, type: 'SEATER', priceOverride: basePrice, status: 'AVAILABLE' });
   }
 
-  // Upper Deck: 12 Sleeper Berths (Premium +₹200)
   for (let r = 1; r <= 4; r++) {
     seats.push({ seatNumber: seatNo++, label: `U${r}A`, deck: 'UPPER', row: r, col: 1, type: 'SLEEPER_UPPER', priceOverride: basePrice + 200, status: 'AVAILABLE' });
     seats.push({ seatNumber: seatNo++, label: `U${r}B`, deck: 'UPPER', row: r, col: 4, type: 'SLEEPER_UPPER', priceOverride: basePrice + 200, status: 'AVAILABLE' });
@@ -56,6 +51,17 @@ function generateDefaultSeatLayout(vehicleType: 'BUS' | 'CAR' | 'TRAVELLER', bas
   }
 
   return seats;
+}
+
+/**
+ * GET /api/admin/trips
+ * Fetches all admin trips.
+ */
+export async function GET() {
+  return NextResponse.json({
+    success: true,
+    trips: Object.values(adminTripsStore),
+  });
 }
 
 /**
@@ -102,7 +108,6 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    // Auto-generate seat map using vehicle layout template
     const initialSeats = generateDefaultSeatLayout(vehicleType, Number(basePrice));
     
     adminTripsStore[tripId] = tripRecord;
@@ -117,6 +122,44 @@ export async function POST(request: Request) {
     });
   } catch (err: any) {
     console.error('Error in POST /api/admin/trips:', err);
+    return NextResponse.json(
+      { success: false, error: err.message || 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/admin/trips
+ * Deletes a trip package permanently by tripId.
+ */
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    let tripId = searchParams.get('tripId');
+
+    if (!tripId) {
+      const body = await request.json().catch(() => ({}));
+      tripId = body.tripId;
+    }
+
+    if (!tripId) {
+      return NextResponse.json(
+        { success: false, error: 'tripId parameter is required for deletion.' },
+        { status: 400 }
+      );
+    }
+
+    delete adminTripsStore[tripId];
+    delete adminSeatPricingStore[tripId];
+
+    return NextResponse.json({
+      success: true,
+      message: `Trip ${tripId} has been deleted permanently.`,
+      deletedTripId: tripId,
+    });
+  } catch (err: any) {
+    console.error('Error in DELETE /api/admin/trips:', err);
     return NextResponse.json(
       { success: false, error: err.message || 'Internal Server Error' },
       { status: 500 }

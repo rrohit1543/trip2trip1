@@ -286,7 +286,8 @@ export interface SecurityEvent {
     | 'USER_STATUS_UPDATED'
     | 'UNAUTHORIZED_ADMIN_ATTEMPT'
     | 'SUPPORT_REFUND_PROCESSED'
-    | 'COMMISSION_RULE_UPDATED';
+    | 'COMMISSION_RULE_UPDATED'
+    | 'TRIP_DELETED';
   identifier: string;
   details: string;
   ipAddress?: string;
