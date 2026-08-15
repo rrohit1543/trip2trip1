@@ -48,9 +48,11 @@ const STORAGE_KEYS = {
 
 // Authorized Super Admin Gmail List / Domain Filter
 const AUTHORIZED_ADMIN_GMAILS = [
+  'rohit19249@gmail.com',
+  'tripmandi.official@gmail.com',
+  'rrohit1543@gmail.com',
   'admin@tripmandi.com',
   'superadmin@tripmandi.com',
-  'rrohit1543@gmail.com',
   'admin@gmail.com',
 ];
 

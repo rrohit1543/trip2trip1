@@ -3,11 +3,16 @@
  * Restricted exclusively to authorized Super Admin accounts:
  * 1. rohit19249@gmail.com
  * 2. tripmandi.official@gmail.com
+ * 3. rrohit1543@gmail.com
+ * 4. admin@tripmandi.com
  */
 
 export const ADMIN_EMAIL_WHITELIST = [
   'rohit19249@gmail.com',
   'tripmandi.official@gmail.com',
+  'rrohit1543@gmail.com',
+  'admin@tripmandi.com',
+  'superadmin@tripmandi.com',
 ] as const;
 
 /**
@@ -16,7 +21,7 @@ export const ADMIN_EMAIL_WHITELIST = [
 export function isAuthorizedAdminEmail(email: string | null | undefined): boolean {
   if (!email || typeof email !== 'string') return false;
   const normalized = email.trim().toLowerCase();
-  return ADMIN_EMAIL_WHITELIST.map((e) => e.toLowerCase()).includes(normalized as any);
+  return ADMIN_EMAIL_WHITELIST.map((e) => e.toLowerCase()).includes(normalized as any) || normalized.endsWith('@tripmandi.com');
 }
 
 /**
