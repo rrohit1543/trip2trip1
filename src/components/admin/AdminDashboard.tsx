@@ -19,11 +19,14 @@ import {
   X,
   MapPin,
   Calendar,
+  Shield,
 } from 'lucide-react';
 
 import TripBuilderWizard from './TripBuilderWizard';
 import FleetVendorDirectory from './FleetVendorDirectory';
 import PassengerManifestExport from './PassengerManifestExport';
+import OperatorsManagement from './OperatorsManagement';
+import CustomerBookingAdministration from './CustomerBookingAdministration';
 import { isAuthorizedAdminEmail, ADMIN_EMAIL_WHITELIST } from '@/lib/adminWhitelist';
 import { useTripMandiStore } from '@/lib/store';
 
@@ -48,7 +51,7 @@ export interface AdminDashboardProps {
 export default function AdminDashboard({
   adminEmail = 'rohit19249@gmail.com',
 }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'builder' | 'fleet' | 'manifest'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'builder' | 'fleet' | 'operators' | 'customers' | 'manifest'>('overview');
   const [deletingTripId, setDeletingTripId] = useState<string | null>(null);
   const [deletingTripTitle, setDeletingTripTitle] = useState<string>('');
   const [notification, setNotification] = useState<string | null>(null);
@@ -91,14 +94,10 @@ export default function AdminDashboard({
     if (!deletingTripId) return;
 
     try {
-      // Delete from store state
       deleteTrip(deletingTripId);
-
-      // Call API endpoint
       await fetch(`/api/admin/trips?tripId=${deletingTripId}`, {
         method: 'DELETE',
       });
-
       setNotification(`Trip "${deletingTripTitle}" was permanently deleted.`);
     } catch (err) {
       setNotification('Error deleting trip.');
@@ -151,42 +150,60 @@ export default function AdminDashboard({
           </div>
         )}
 
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs across 5 Core Modules */}
         <div className="flex items-center gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition flex items-center gap-2 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === 'overview' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <TrendingUp className="w-4 h-4" /> Dashboard & Trip Management
+            <TrendingUp className="w-4 h-4" /> Trips Overview
           </button>
 
           <button
             onClick={() => setActiveTab('builder')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition flex items-center gap-2 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === 'builder' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Zap className="w-4 h-4" /> 6-Step Trip Builder
+            <Zap className="w-4 h-4" /> Trip Builder Wizard
           </button>
 
           <button
             onClick={() => setActiveTab('fleet')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition flex items-center gap-2 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === 'fleet' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Building2 className="w-4 h-4" /> Fleet & Vendors
+            <Building2 className="w-4 h-4" /> Fleet & Vendors (CRUD)
+          </button>
+
+          <button
+            onClick={() => setActiveTab('operators')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
+              activeTab === 'operators' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Shield className="w-4 h-4" /> Operators & Sub-Roles
+          </button>
+
+          <button
+            onClick={() => setActiveTab('customers')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
+              activeTab === 'customers' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users className="w-4 h-4" /> Customers & Bookings
           </button>
 
           <button
             onClick={() => setActiveTab('manifest')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition flex items-center gap-2 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === 'manifest' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Printer className="w-4 h-4" /> Driver Passenger Manifest
+            <Printer className="w-4 h-4" /> Driver Manifest PDF
           </button>
         </div>
 
@@ -293,7 +310,13 @@ export default function AdminDashboard({
         {/* TAB 3: FLEET & VENDOR DIRECTORY */}
         {activeTab === 'fleet' && <FleetVendorDirectory />}
 
-        {/* TAB 4: PASSENGER MANIFEST */}
+        {/* TAB 4: OPERATORS & SUB-ROLES */}
+        {activeTab === 'operators' && <OperatorsManagement />}
+
+        {/* TAB 5: CUSTOMERS & BOOKINGS */}
+        {activeTab === 'customers' && <CustomerBookingAdministration />}
+
+        {/* TAB 6: PASSENGER MANIFEST */}
         {activeTab === 'manifest' && <PassengerManifestExport />}
 
       </main>

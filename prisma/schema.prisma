@@ -1,4 +1,4 @@
-// TripMandi Admin Portal & Connected Trip Logistics Engine
+// TripMandi Admin Portal & Logistics Engine Schema
 // Database: PostgreSQL
 
 datasource db {
@@ -10,211 +10,117 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// ==========================================
-// ENUMS
-// ==========================================
-
-enum UserRole {
+enum Role {
   SUPER_ADMIN
   OPERATOR
-  STAFF
+  CUSTOMER
 }
 
-enum AccountStatus {
-  ACTIVE
-  SUSPENDED
-}
-
-enum VehicleCategory {
-  AC_SLEEPER
-  NON_AC_SEATER
-  VOLVO_MULTI_AXLE
-  MINI_BUS
-  SUV_7_SEATER
-  TRAVELLER_16_SEATER
-}
-
-enum VehicleStatus {
-  ACTIVE
-  MAINTENANCE
-  DECOMMISSIONED
-}
-
-enum TripCategory {
+enum TripType {
   DIRECT
-  CONNECTED_MASTER
-  CONNECTED_SUB_LEG
+  CONNECTED
 }
 
-enum TripPublishStatus {
+enum TripStatus {
   DRAFT
-  PUBLISHED
+  ACTIVE
   SOLD_OUT
-  CANCELLED
   COMPLETED
+  CANCELLED
 }
 
-enum SeatType {
-  SEATER
-  SLEEPER_UPPER
-  SLEEPER_LOWER
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
 }
 
-enum SeatStatus {
-  AVAILABLE
-  FEMALE_ONLY
-  BLOCKED
-  BOOKED
-}
-
-enum DeckType {
-  LOWER
-  UPPER
-}
-
-// ==========================================
-// MODELS
-// ==========================================
-
-// 1. Admin & User Whitelist Model
 model User {
-  id        String        @id @default(uuid())
-  email     String        @unique
-  name      String
-  role      UserRole      @default(SUPER_ADMIN)
-  status    AccountStatus @default(ACTIVE)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  @@map("users")
+  id        String    @id @default(uuid())
+  name      String?
+  email     String    @unique
+  phone     String?
+  role      Role      @default(CUSTOMER)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
 }
 
-// 2. Contractor / Vendor Model
-model Contractor {
-  id                  String                @id @default(uuid())
-  agencyName          String
-  contactPerson       String
-  phone               String
-  email               String
-  contractDocumentUrl String?
-  payoutAgreement     Json                  // Rate agreement JSON
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  vehicles            Vehicle[]
-  drivers             Driver[]
-  assignments         LogisticsAssignment[]
-
-  @@map("contractors")
-}
-
-// 3. Vehicle / Bus Model
-model Vehicle {
-  id              String                @id @default(uuid())
-  contractorId    String
-  vehicleNumber   String                @unique
-  vehicleCategory VehicleCategory       @default(VOLVO_MULTI_AXLE)
-  totalSeats      Int                   @default(36)
-  seatingLayout   Json                  // Grid configuration, decks, seat labels
-  insuranceExpiry DateTime
-  fitnessExpiry   DateTime
-  status          VehicleStatus         @default(ACTIVE)
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-
-  contractor      Contractor            @relation(fields: [contractorId], references: [id], onDelete: Cascade)
-  assignments     LogisticsAssignment[]
-
-  @@map("vehicles")
-}
-
-// 4. Driver & Crew Model
-model Driver {
-  id                   String                @id @default(uuid())
-  fullName             String
-  primaryPhone         String
-  emergencyPhone       String
-  licenseNumber        String                @unique
-  licenseExpiry        DateTime
-  assignedContractorId String?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-
-  contractor           Contractor?           @relation(fields: [assignedContractorId], references: [id], onDelete: SetNull)
-  assignments          LogisticsAssignment[]
-
-  @@map("drivers")
-}
-
-// 5. Trip Model (Direct & Multi-Leg Connected Trip Support)
 model Trip {
-  id                 String                @id @default(uuid())
-  slug               String                @unique
-  title              String
-  description        String
-  tripType           TripCategory          @default(DIRECT)
-  parentTripId       String?               // Self-referencing link for multi-leg sub-trips
-  sourceCity         String
-  destinationCity    String
-  boardingPoints     Json                  // Array of [{ name, time, landmark, lat, lng }]
-  dropPoints         Json                  // Array of [{ name, time, landmark, lat, lng }]
-  startDatetime      DateTime
-  endDatetime        DateTime
-  durationHours      Float
-  itinerary          Json                  // Array of [{ dayNumber, title, description, highlights }]
-  pricing            Json                  // Base fare, dynamic surge rules, seat category premiums
-  inclusions         String[]
-  exclusions         String[]
-  cancellationPolicy String
-  mediaGallery       Json                  // Array of [{ url, isFeatured, sortOrder, altText }]
-  status             TripPublishStatus     @default(DRAFT)
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
-
-  parentTrip         Trip?                 @relation("MultiLegTrips", fields: [parentTripId], references: [id], onDelete: SetNull)
-  childSubLegs       Trip[]                @relation("MultiLegTrips")
-  seatPricings       SeatPricing[]
-  assignments        LogisticsAssignment[]
-
-  @@index([sourceCity, destinationCity])
-  @@map("trips")
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  description String
+  tripType    TripType   @default(DIRECT)
+  basePrice   Float
+  images      String[]
+  itinerary   Json
+  legs        TripLeg[]
+  bookings    Booking[]
+  status      TripStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
 }
 
-// 6. Logistics Assignment Model (Trip <-> Fleet <-> Driver)
-model LogisticsAssignment {
-  id           String     @id @default(uuid())
-  tripId       String
-  vehicleId    String
-  driverId     String
-  contractorId String
-  operatorNote String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  trip         Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  vehicle      Vehicle    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  driver       Driver     @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  contractor   Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
-
-  @@map("logistics_assignments")
-}
-
-// 7. Seat Pricing Model
-model SeatPricing {
-  id            String     @id @default(uuid())
+model TripLeg {
+  id            String      @id @default(uuid())
   tripId        String
-  seatNumber    Int
-  seatLabel     String     // e.g. "L1", "U5"
-  priceOverride Float?
-  seatType      SeatType   @default(SEATER)
-  status        SeatStatus @default(AVAILABLE)
-  deck          DeckType   @default(LOWER)
-  row           Int        @default(1)
-  col           Int        @default(1)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  trip          Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  sequenceOrder Int
+  origin        String
+  destination   String
+  departureTime DateTime
+  arrivalTime   DateTime
+  busId         String?
+  bus           Bus?        @relation(fields: [busId], references: [id], onDelete: SetNull)
+  driverId      String?
+  driver        Driver?     @relation(fields: [driverId], references: [id], onDelete: SetNull)
+}
 
-  trip          Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+model Contractor {
+  id            String   @id @default(uuid())
+  companyName   String
+  contactPerson String
+  phone         String
+  email         String?
+  gstNumber     String?
+  buses         Bus[]
+  drivers       Driver[]
+  createdAt     DateTime @default(now())
+}
 
-  @@unique([tripId, seatNumber])
-  @@map("seat_pricings")
+model Driver {
+  id            String      @id @default(uuid())
+  name          String
+  phone         String
+  licenseNumber String
+  contractorId  String?
+  contractor    Contractor? @relation(fields: [contractorId], references: [id], onDelete: SetNull)
+  tripLegs      TripLeg[]
+  createdAt     DateTime    @default(now())
+}
+
+model Bus {
+  id           String      @id @default(uuid())
+  busNumber    String      @unique
+  model        String
+  busType      String // Sleeper, Semi-Sleeper, Seater
+  seatCapacity Int
+  seatLayout   Json
+  contractorId String?
+  contractor   Contractor? @relation(fields: [contractorId], references: [id], onDelete: SetNull)
+  tripLegs     TripLeg[]
+  createdAt    DateTime    @default(now())
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  pnr           String        @unique
+  tripId        String
+  trip          Trip          @relation(fields: [tripId], references: [id], onDelete: Restrict)
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seatsBooked   String[]
+  totalAmount   Float
+  paymentStatus PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
 }
