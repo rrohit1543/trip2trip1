@@ -20,6 +20,7 @@ import AuthModal from '../components/auth/AuthModal';
 import AdminLoginModal from '../components/auth/AdminLoginModal';
 import ChatWidget from '../components/common/ChatWidget';
 import ReviewModal from '../components/common/ReviewModal';
+import PublicPostsFeed from '../components/customer/PublicPostsFeed';
 import Footer from '../components/common/Footer';
 import { useRouter } from 'next/navigation';
 import { Radio, Star } from 'lucide-react';
@@ -192,7 +193,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* VIEW 2: NATIONAL FLEET RADAR */}
+          {/* VIEW 2: PUBLIC POSTS & ANNOUNCEMENTS FEED */}
+          {activeTab === 'posts' && <PublicPostsFeed />}
+
+          {/* VIEW 3: NATIONAL FLEET RADAR */}
           {activeTab === 'live-radar' && (
             <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6 bg-white">
               <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-xl">

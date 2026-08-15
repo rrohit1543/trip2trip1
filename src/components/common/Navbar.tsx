@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { User, UserRole } from '../../types';
 import ThemeToggle from './ThemeToggle';
 import Link from 'next/link';
-import { Compass, ShieldAlert, Bus, UserCheck, Radio, LogIn, LogOut, Lock, LifeBuoy, X, Hotel, Calendar, HelpCircle, List, PhoneCall } from 'lucide-react';
+import { Compass, ShieldAlert, Bus, UserCheck, Radio, LogIn, LogOut, Lock, LifeBuoy, X, Hotel, Calendar, HelpCircle, List, PhoneCall, FileText } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User | null;
@@ -114,6 +114,19 @@ export default function Navbar({
             >
               <Radio className="w-4 h-4 text-red-600 animate-pulse" />
               <span>Fleet Radar</span>
+            </Link>
+
+            <Link
+              href="/"
+              onClick={() => setActiveTab('posts')}
+              className={`flex items-center gap-2 py-6 border-b-2 transition-all ${
+                activeTab === 'posts'
+                  ? 'border-red-600 text-red-600 font-black'
+                  : 'border-transparent text-slate-700 hover:text-red-600'
+              }`}
+            >
+              <FileText className={`w-4 h-4 ${activeTab === 'posts' ? 'text-red-600' : 'text-slate-500'}`} />
+              <span>Posts & Updates</span>
             </Link>
 
             <Link
@@ -249,6 +262,19 @@ export default function Navbar({
           >
             <Radio className="w-3.5 h-3.5 text-red-600 animate-pulse" />
             <span>Fleet Radar</span>
+          </Link>
+
+          <Link
+            href="/"
+            onClick={() => setActiveTab('posts')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full transition cursor-pointer ${
+              activeTab === 'posts'
+                ? 'bg-red-600 text-white shadow-md font-black'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Posts & Updates</span>
           </Link>
 
           <Link

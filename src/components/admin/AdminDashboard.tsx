@@ -20,6 +20,7 @@ import {
   MapPin,
   Calendar,
   Shield,
+  FileText,
 } from 'lucide-react';
 
 import TripBuilderWizard from './TripBuilderWizard';
@@ -27,6 +28,7 @@ import FleetVendorDirectory from './FleetVendorDirectory';
 import PassengerManifestExport from './PassengerManifestExport';
 import OperatorsManagement from './OperatorsManagement';
 import CustomerBookingAdministration from './CustomerBookingAdministration';
+import PostsCMSPanel from './PostsCMSPanel';
 import { isAuthorizedAdminEmail, ADMIN_EMAIL_WHITELIST } from '@/lib/adminWhitelist';
 import { useTripMandiStore } from '@/lib/store';
 
@@ -51,7 +53,7 @@ export interface AdminDashboardProps {
 export default function AdminDashboard({
   adminEmail = 'rohit19249@gmail.com',
 }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'builder' | 'fleet' | 'operators' | 'customers' | 'manifest'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'builder' | 'fleet' | 'operators' | 'customers' | 'manifest' | 'posts'>('overview');
   const [deletingTripId, setDeletingTripId] = useState<string | null>(null);
   const [deletingTripTitle, setDeletingTripTitle] = useState<string>('');
   const [galleryTrip, setGalleryTrip] = useState<any | null>(null);
@@ -200,6 +202,15 @@ export default function AdminDashboard({
           </button>
 
           <button
+            onClick={() => setActiveTab('posts')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
+              activeTab === 'posts' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText className="w-4 h-4" /> Posts & CMS
+          </button>
+
+          <button
             onClick={() => setActiveTab('manifest')}
             className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === 'manifest' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'text-slate-600 hover:text-slate-900'
@@ -329,7 +340,10 @@ export default function AdminDashboard({
         {/* TAB 5: CUSTOMERS & BOOKINGS */}
         {activeTab === 'customers' && <CustomerBookingAdministration />}
 
-        {/* TAB 6: PASSENGER MANIFEST */}
+        {/* TAB 6: POSTS & CMS */}
+        {activeTab === 'posts' && <PostsCMSPanel />}
+
+        {/* TAB 7: PASSENGER MANIFEST */}
         {activeTab === 'manifest' && <PassengerManifestExport />}
 
       </main>

@@ -124,3 +124,45 @@ model Booking {
   paymentStatus PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())
 }
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PostCategory {
+  TRIP_UPDATE
+  NEWS
+  ANNOUNCEMENT
+  OFFERS
+  FLEET_ALERT
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Post {
+  id        String      @id @default(uuid())
+  title     String
+  content   String
+  category  PostCategory @default(TRIP_UPDATE)
+  status    PostStatus   @default(PUBLISHED)
+  isPinned  Boolean      @default(false)
+  authorId  String
+  media     PostMedia[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model PostMedia {
+  id           String    @id @default(uuid())
+  postId       String
+  post         Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  mediaType    MediaType @default(IMAGE)
+  url          String
+  thumbnailUrl String?
+  orderIndex   Int       @default(0)
+}
+
