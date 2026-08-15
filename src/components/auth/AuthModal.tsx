@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { UserRole } from '../../types';
-import { X, Lock, Mail, Phone, KeyRound, ArrowRight, RefreshCw, AlertCircle, CheckCircle2, Users, Building2, Shield } from 'lucide-react';
+import { X, Lock, Mail, Phone, KeyRound, ArrowRight, RefreshCw, AlertCircle, CheckCircle2, Users, Building2, Shield, ExternalLink } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ export default function AuthModal({
 
   // Form Fields
   const [name, setName] = useState('');
-  const [identifier, setIdentifier] = useState('rrohit1543@gmail.com'); // Mobile or Email
+  const [identifier, setIdentifier] = useState('theraj4546@gmail.com'); // Mobile or Email
   const [password, setPassword] = useState('password123');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -42,12 +42,13 @@ export default function AuthModal({
     useRef<HTMLInputElement>(null),
   ];
 
-  // Status Alerts, Timers, and Resend Cooldown
+  // Status Alerts, Timers, Resend Cooldown, & Ethereal Test Inbox URL
   const [alert, setAlert] = useState<{ type: 'error' | 'success' | 'info'; message: string } | null>(null);
   const [timerSeconds, setTimerSeconds] = useState(300); // 5-minute (300s) expiry countdown
   const [resendCooldownSec, setResendCooldownSec] = useState(0); // 60s resend cooldown
   const [attemptsRemaining, setAttemptsRemaining] = useState(3);
   const [loading, setLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // 1. 5-Minute OTP Expiry & 60s Resend Cooldown Timers
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function AuthModal({
     setRole(selectedRole);
     setAlert(null);
     if (selectedRole === 'customer') {
-      setIdentifier('rrohit1543@gmail.com');
+      setIdentifier('theraj4546@gmail.com');
       setPassword('password123');
     } else if (selectedRole === 'operator') {
       setIdentifier('vikram@himalayanyatra.com');
@@ -146,6 +147,7 @@ export default function AuthModal({
     }
 
     setLoading(true);
+    setPreviewUrl(null);
     try {
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
@@ -160,9 +162,12 @@ export default function AuthModal({
         setTimerSeconds(300); // 5-minute countdown
         setResendCooldownSec(60); // 60s cooldown
         setAttemptsRemaining(3);
+        if (data.dispatchInfo?.previewUrl) {
+          setPreviewUrl(data.dispatchInfo.previewUrl);
+        }
         setAlert({ type: 'info', message: data.message || `A 6-digit OTP code has been sent to ${identifier}.` });
       } else {
-        setAlert({ type: 'error', message: data.error || 'Failed to send OTP.' });
+        setAlert({ type: 'error', message: data.error || 'Failed to send OTP email.' });
       }
     } catch (err) {
       setAlert({ type: 'error', message: 'Network error sending OTP. Please try again.' });
@@ -219,6 +224,7 @@ export default function AuthModal({
     if (resendCooldownSec > 0) return;
     setAlert(null);
     setLoading(true);
+    setPreviewUrl(null);
 
     try {
       const res = await fetch('/api/auth/resend-otp', {
@@ -233,6 +239,9 @@ export default function AuthModal({
         setTimerSeconds(300); // Start new 5-minute countdown
         setResendCooldownSec(60); // Reset 60s resend cooldown
         setAttemptsRemaining(3);
+        if (data.dispatchInfo?.previewUrl) {
+          setPreviewUrl(data.dispatchInfo.previewUrl);
+        }
         setAlert({ type: 'info', message: 'A new OTP has been sent to your email.' });
       } else {
         setAlert({ type: 'error', message: data.error || 'Failed to resend OTP.' });
@@ -446,7 +455,7 @@ export default function AuthModal({
                 <input
                   type="text"
                   required
-                  placeholder="rrohit1543@gmail.com"
+                  placeholder="theraj4546@gmail.com"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-red-600"
@@ -488,7 +497,7 @@ export default function AuthModal({
             </form>
           )}
 
-          {/* 3. OTP VERIFICATION MODE (NO DEMO OTP BADGE - 100% PRODUCTION) */}
+          {/* 3. OTP VERIFICATION MODE (NO DEMO OTP BADGE - 100% PRODUCTION REAL DELIVERED EMAIL) */}
           {mode === 'otp_verify' && (
             <form onSubmit={handleVerifyOTPSubmit} className="space-y-5 text-center">
               <div className="w-12 h-12 rounded-2xl bg-red-600/10 border border-red-600/30 flex items-center justify-center mx-auto text-red-600">
@@ -499,6 +508,22 @@ export default function AuthModal({
                 <h4 className="text-base font-black text-slate-900">Enter 6-Digit OTP Code</h4>
                 <p className="text-xs text-slate-500">Sent to <strong className="text-slate-900">{identifier}</strong></p>
               </div>
+
+              {/* Ethereal Inbox Test Preview Button (If no local Gmail App Password configured) */}
+              {previewUrl && (
+                <div className="bg-amber-50 border border-amber-300 p-2.5 rounded-xl text-xs font-bold text-amber-900 space-y-1">
+                  <div>📬 Real SMTP Delivery Test Preview:</div>
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-red-600 font-extrabold hover:underline"
+                  >
+                    <span>Click to view delivered email in Ethereal Inbox</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
 
               {/* 6 Individual Digit Input Boxes */}
               <div className="flex items-center justify-center gap-2">

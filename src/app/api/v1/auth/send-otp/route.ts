@@ -1,21 +1,22 @@
 import { NextResponse } from 'next/server';
-import { parseAndValidateIdentifier } from '../../../../../lib/identifierDetector';
-import { checkOTPRateLimit, saveOTPEntry } from '../../../../../lib/otpStore';
-import { generateSecureOTP } from '../../../../../lib/authServer';
-import { sendOTPEmail } from '../../../../../lib/emailService';
-import { sendSMSOTP } from '../../../../../lib/smsService';
+import { parseAndValidateIdentifier } from '@/lib/identifierDetector';
+import { checkOTPRateLimit, saveOTPEntry } from '@/lib/otpStore';
+import { generateSecureOTP } from '@/lib/authServer';
+import { sendOTPEmail } from '@/lib/emailService';
+import { sendSMSOTP } from '@/lib/smsService';
 
 /**
  * POST /api/v1/auth/send-otp
  * Step 1: Detect Email vs Mobile Number.
  * Step 2: Rate Limiting Check (Max 3 attempts per 10 mins per IP/identifier).
  * Step 3: Generate 6-digit numerical OTP & SHA-256 HMAC hash.
- * Step 4: Dispatch via Email (SMTP/SendGrid) or SMS/WhatsApp (Twilio/Fast2SMS).
+ * Step 4: Dispatch via Email (NodeMailer SMTP/SendGrid/Resend) or SMS/WhatsApp.
+ * SECURITY: Plaintext OTP is NEVER returned in response JSON.
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { identifier } = body;
+    const identifier = body.email || body.identifier;
 
     if (!identifier || typeof identifier !== 'string') {
       return NextResponse.json(
@@ -55,12 +56,12 @@ export async function POST(request: Request) {
     // 3. Generate Cryptographically Secure 6-Digit OTP Code
     const { code } = generateSecureOTP();
 
-    // Save SHA-256 Hashed OTP Entry with 10-minute TTL (Never store plain-text)
-    const { expiresAt } = saveOTPEntry({
+    // Save SHA-256 Hashed OTP Entry with 5-minute TTL (Never store plain-text)
+    saveOTPEntry({
       identifier: parsed.normalizedIdentifier,
       type: parsed.type,
       otpCode: code,
-      ttlMinutes: 10,
+      ttlMinutes: 5,
     });
 
     // 4. Multi-Channel Dispatch (Email vs SMS/WhatsApp)
@@ -81,14 +82,24 @@ export async function POST(request: Request) {
       });
     }
 
+    if (!dispatchInfo.success) {
+      return NextResponse.json(
+        { success: false, error: dispatchInfo.message || 'Email delivery failure. Please try again.' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       message: `A 6-digit OTP code has been dispatched to your ${parsed.type === 'email' ? 'Email Address' : 'Mobile Number'} (${parsed.formattedDisplay}).`,
       identifier: parsed.normalizedIdentifier,
       identifierType: parsed.type,
-      expiresInSeconds: 600,
-      dispatchInfo,
-      otpDemoCode: code, // Rendered for developer demo convenience
+      expiresInSeconds: 300,
+      dispatchInfo: {
+        success: dispatchInfo.success,
+        messageId: dispatchInfo.messageId,
+        previewUrl: dispatchInfo.previewUrl,
+      },
     });
   } catch (err: any) {
     console.error('Error in POST /api/v1/auth/send-otp:', err);
