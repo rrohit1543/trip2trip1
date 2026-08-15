@@ -436,19 +436,105 @@ export default function TripBuilderWizard({ onTripCreated }: { onTripCreated?: (
         </div>
       )}
 
-      {/* STEP 5: MEDIA GALLERY */}
+      {/* STEP 5: MEDIA GALLERY & IMAGE UPLOAD */}
       {currentStep === 5 && (
-        <div className="space-y-4">
-          <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-red-600" /> Step 5: High-Res Bus & Destination Gallery
-          </h3>
+        <div className="space-y-4 font-sans">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-red-600" /> Step 5: Upload & Manage High-Res Trip Photos
+            </h3>
+            <label className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold cursor-pointer shadow-md flex items-center gap-1">
+              <Plus className="w-4 h-4" /> Upload Local Photo
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  files.forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      if (reader.result) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          mediaGallery: [
+                            ...prev.mediaGallery,
+                            { url: reader.result as string, altText: file.name, isFeatured: prev.mediaGallery.length === 0, sortOrder: prev.mediaGallery.length + 1 },
+                          ],
+                        }));
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  });
+                }}
+              />
+            </label>
+          </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Direct URL Input */}
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 p-2 rounded-2xl">
+            <input
+              type="text"
+              placeholder="Paste Image URL (e.g., https://images.unsplash.com/...)"
+              id="newMediaUrlInput"
+              className="flex-1 bg-transparent px-3 py-1.5 text-xs text-slate-900 focus:outline-none font-mono"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('newMediaUrlInput') as HTMLInputElement;
+                if (el && el.value.trim()) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    mediaGallery: [
+                      ...prev.mediaGallery,
+                      { url: el.value.trim(), altText: 'Uploaded Trip Image', isFeatured: prev.mediaGallery.length === 0, sortOrder: prev.mediaGallery.length + 1 },
+                    ],
+                  }));
+                  el.value = '';
+                }
+              }}
+              className="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs"
+            >
+              Add URL
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {formData.mediaGallery.map((media, idx) => (
-              <div key={idx} className="relative rounded-2xl overflow-hidden border border-slate-200 group">
+              <div key={idx} className="relative rounded-2xl overflow-hidden border border-slate-200 group bg-slate-900">
                 <img src={media.url} alt={media.altText} className="w-full h-36 object-cover" />
-                <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-slate-950/80 to-transparent text-white text-[10px] font-bold">
-                  {media.altText} {media.isFeatured && '(Featured Cover)'}
+                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition p-2 flex flex-col justify-between">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        mediaGallery: prev.mediaGallery.filter((_, i) => i !== idx),
+                      }));
+                    }}
+                    className="self-end p-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  <div className="text-[10px] text-white font-bold flex items-center justify-between">
+                    <span>{media.isFeatured ? '★ Featured Cover' : 'Gallery Image'}</span>
+                    {!media.isFeatured && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            mediaGallery: prev.mediaGallery.map((m, i) => ({ ...m, isFeatured: i === idx })),
+                          }));
+                        }}
+                        className="underline"
+                      >
+                        Set Cover
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

@@ -609,6 +609,12 @@ export function useTripMandiStore() {
     );
   };
 
+  const updateTripImages = (tripId: string, images: string[]) => {
+    setTrips((prev) =>
+      prev.map((t) => (t.id === tripId ? { ...t, images } : t))
+    );
+  };
+
   const deleteTrip = (tripId: string) => {
     setTrips((prev) => prev.filter((t) => t.id !== tripId));
     addSecurityLog('TRIP_DELETED', currentUser?.email || 'admin', `Trip ${tripId} deleted by Admin`);
@@ -772,6 +778,7 @@ export function useTripMandiStore() {
     updateKYCStatus,
     createTrip,
     toggleLiveTrip,
+    updateTripImages,
     deleteTrip,
     createBooking,
     addChatMessage,

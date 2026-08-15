@@ -54,9 +54,11 @@ export default function AdminDashboard({
   const [activeTab, setActiveTab] = useState<'overview' | 'builder' | 'fleet' | 'operators' | 'customers' | 'manifest'>('overview');
   const [deletingTripId, setDeletingTripId] = useState<string | null>(null);
   const [deletingTripTitle, setDeletingTripTitle] = useState<string>('');
+  const [galleryTrip, setGalleryTrip] = useState<any | null>(null);
+  const [newImageUrl, setNewImageUrl] = useState('');
   const [notification, setNotification] = useState<string | null>(null);
 
-  const { trips, deleteTrip } = useTripMandiStore();
+  const { trips, deleteTrip, updateTripImages } = useTripMandiStore();
 
   // Verify Whitelist Security Guard
   const isAuthorized = isAuthorizedAdminEmail(adminEmail);
@@ -264,15 +266,20 @@ export default function AdminDashboard({
                       <th className="p-3">Departure Date</th>
                       <th className="p-3">Available Seats</th>
                       <th className="p-3">Status</th>
-                      <th className="p-3 text-right">Delete Action</th>
+                      <th className="p-3 text-right">Gallery & Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-800">
                     {trips.map((t) => (
                       <tr key={t.id} className="hover:bg-slate-50/80 transition">
                         <td className="p-3">
-                          <div className="font-extrabold text-slate-900">{t.name}</div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-1 font-mono">
+                          <div className="font-extrabold text-slate-900 flex items-center gap-2">
+                            {t.images && t.images[0] && (
+                              <img src={t.images[0]} alt={t.name} className="w-8 h-8 rounded-lg object-cover border border-slate-200" />
+                            )}
+                            <span>{t.name}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-500 flex items-center gap-1 font-mono mt-0.5">
                             <MapPin className="w-3 h-3 text-red-600" /> {t.departureCity} &rarr; {t.destinationCity}
                           </div>
                         </td>
@@ -287,12 +294,18 @@ export default function AdminDashboard({
                             {t.status}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
+                        <td className="p-3 text-right space-x-1">
+                          <button
+                            onClick={() => setGalleryTrip(t)}
+                            className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            📸 Upload / Gallery ({t.images?.length || 0})
+                          </button>
                           <button
                             onClick={() => { setDeletingTripId(t.id); setDeletingTripTitle(t.name); }}
-                            className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-extrabold text-xs transition border border-red-200 flex items-center gap-1.5 ml-auto cursor-pointer"
+                            className="px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-extrabold text-xs transition border border-red-200 inline-flex items-center gap-1 cursor-pointer"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Delete Trip
+                            <Trash2 className="w-3.5 h-3.5" /> Delete
                           </button>
                         </td>
                       </tr>
@@ -350,6 +363,112 @@ export default function AdminDashboard({
                 className="w-1/2 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold shadow-lg shadow-red-600/30 cursor-pointer"
               >
                 Permanently Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TRIP IMAGE UPLOADER & GALLERY MANAGEMENT MODAL */}
+      {galleryTrip && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md font-sans">
+          <div className="max-w-xl w-full bg-white border-2 border-slate-200 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Upload & Manage Trip Images</h3>
+                <p className="text-xs text-slate-500 font-bold">{galleryTrip.name}</p>
+              </div>
+              <button onClick={() => setGalleryTrip(null)} className="text-slate-400 hover:text-slate-900">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Upload Options */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <label className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold cursor-pointer shadow-md inline-flex items-center gap-1.5">
+                  📁 Upload Local Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      files.forEach((file) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          if (reader.result) {
+                            const newUrl = reader.result as string;
+                            const updatedImages = [...(galleryTrip.images || []), newUrl];
+                            setGalleryTrip({ ...galleryTrip, images: updatedImages });
+                            updateTripImages(galleryTrip.id, updatedImages);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      });
+                    }}
+                  />
+                </label>
+
+                <span className="text-xs font-bold text-slate-400">OR</span>
+
+                <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-300 px-3 py-1.5 rounded-xl">
+                  <input
+                    type="text"
+                    placeholder="Paste image URL..."
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    className="w-full bg-transparent text-xs text-slate-900 font-mono focus:outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      if (newImageUrl.trim()) {
+                        const updatedImages = [...(galleryTrip.images || []), newImageUrl.trim()];
+                        setGalleryTrip({ ...galleryTrip, images: updatedImages });
+                        updateTripImages(galleryTrip.id, updatedImages);
+                        setNewImageUrl('');
+                      }
+                    }}
+                    className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg shrink-0"
+                  >
+                    Add URL
+                  </button>
+                </div>
+              </div>
+
+              {/* Gallery Image Grid */}
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                {(galleryTrip.images || []).map((imgUrl: string, idx: number) => (
+                  <div key={idx} className="relative rounded-2xl overflow-hidden border border-slate-200 group bg-slate-900">
+                    <img src={imgUrl} alt={`Trip image ${idx + 1}`} className="w-full h-28 object-cover" />
+                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition p-2 flex flex-col justify-between">
+                      <button
+                        onClick={() => {
+                          const updatedImages = galleryTrip.images.filter((_: any, i: number) => i !== idx);
+                          setGalleryTrip({ ...galleryTrip, images: updatedImages });
+                          updateTripImages(galleryTrip.id, updatedImages);
+                        }}
+                        className="self-end p-1 rounded-lg bg-rose-600 text-white hover:bg-rose-700"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-[10px] text-white font-bold">Photo #{idx + 1}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t flex justify-end">
+              <button
+                onClick={() => {
+                  setNotification(`Gallery photos for "${galleryTrip.name}" saved!`);
+                  setGalleryTrip(null);
+                }}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
+              >
+                Save & Close Gallery
               </button>
             </div>
           </div>
