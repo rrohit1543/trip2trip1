@@ -63,18 +63,28 @@ export async function sendOTPEmail(params: {
 
     if (smtpUser && smtpPass && smtpPass.trim() !== '') {
       // 1. Direct Real SMTP Transporter (Gmail App Password / SendGrid / Custom SMTP)
-      transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
+      if (smtpHost.includes('gmail') || smtpUser.includes('gmail')) {
+        transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+        });
+      } else {
+        transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port: smtpPort,
+          secure: smtpPort === 465,
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        });
+      }
 
       const info = await transporter.sendMail({
         from: process.env.EMAIL_FROM || `"TripMandi Support" <${smtpUser}>`,
