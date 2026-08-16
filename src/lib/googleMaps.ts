@@ -6,7 +6,8 @@ declare global {
   }
 }
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyDemoTripMandiMapsApiKey2026';
+const rawApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'zlom lcmg yxix qhls';
+const GOOGLE_MAPS_API_KEY = rawApiKey.replace(/\s+/g, '');
 
 let isScriptLoading = false;
 let isScriptLoaded = false;

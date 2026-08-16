@@ -56,11 +56,12 @@ export async function sendOTPEmail(params: {
     const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
     const smtpPort = Number(process.env.SMTP_PORT || 587);
     const smtpUser = process.env.SMTP_USER || 'tripmandi.official@gmail.com';
-    const smtpPass = process.env.SMTP_PASS || '';
+    const rawPass = process.env.SMTP_PASS || 'zlom lcmg yxix qhls';
+    const smtpPass = rawPass.replace(/\s+/g, '');
 
     let transporter: nodemailer.Transporter;
 
-    if (smtpUser && smtpPass && smtpPass.trim() !== '' && !smtpPass.includes('your_gmail_app_password')) {
+    if (smtpUser && smtpPass && smtpPass.trim() !== '') {
       // 1. Direct Real SMTP Transporter (Gmail App Password / SendGrid / Custom SMTP)
       transporter = nodemailer.createTransport({
         host: smtpHost,
