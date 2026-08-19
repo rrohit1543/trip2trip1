@@ -66,8 +66,12 @@ export default function Home() {
   const [searchDep, setSearchDep] = useState('Delhi');
   const [searchDest, setSearchDest] = useState('Manali');
   const [searchCategory, setSearchCategory] = useState('All');
+  const [displayedTripsFilter, setDisplayedTripsFilter] = useState<'ALL' | 'ROUTE'>('ALL');
 
   const searchResult = searchRoute(searchDep, searchDest, searchCategory);
+
+  // Trips to display: ALL published trips (including Admin created trips) or route filtered
+  const tripsToDisplay = displayedTripsFilter === 'ALL' ? trips : (searchResult.matchingTrips.length > 0 ? searchResult.matchingTrips : trips);
 
   // Auth Modals
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -91,6 +95,7 @@ export default function Home() {
     setSearchDep(dep);
     setSearchDest(dest);
     if (category) setSearchCategory(category);
+    setDisplayedTripsFilter('ROUTE');
   };
 
   const handleProceedToCheckout = (trip: Trip, seats: number[], pickup: string, drop: string) => {
@@ -125,29 +130,57 @@ export default function Home() {
               <OfferBanners />
 
               <div className="max-w-7xl mx-auto px-4 space-y-6 pt-4 bg-white">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                      <span>Available Group Trips</span>
-                      <span className="text-xs bg-red-600/10 text-red-600 border border-red-600/30 px-2.5 py-0.5 rounded-full font-mono">
-                        {searchResult.matchingTrips.length} Found
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-black text-slate-900">Available Group Trips</h2>
+                      <span className="text-xs bg-red-600/10 text-red-600 border border-red-600/30 px-3 py-0.5 rounded-full font-mono font-bold">
+                        {tripsToDisplay.length} Packages Found
                       </span>
-                    </h2>
+                    </div>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Showing verified trips for <strong className="text-slate-900">{searchDep} &rarr; {searchDest}</strong>
+                      Showing verified group tour packages created by Admin & Partner Agencies across India
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs font-bold">
-                    <span className="px-3 py-1 bg-white border border-slate-200 rounded-xl text-slate-700 shadow-sm">
-                      {searchResult.liveCount} Live Telemetry Active
-                    </span>
+                  {/* Quick Filter Pill Buttons */}
+                  <div className="flex items-center gap-2 overflow-x-auto py-1 text-xs font-bold no-scrollbar">
+                    <button
+                      onClick={() => setDisplayedTripsFilter('ALL')}
+                      className={`px-3.5 py-1.5 rounded-full transition cursor-pointer shrink-0 ${
+                        displayedTripsFilter === 'ALL'
+                          ? 'bg-red-600 text-white font-black shadow-md'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      All Packages ({trips.length})
+                    </button>
+                    <button
+                      onClick={() => handleSearch('Delhi', 'Manali')}
+                      className={`px-3.5 py-1.5 rounded-full transition cursor-pointer shrink-0 ${
+                        displayedTripsFilter === 'ROUTE' && searchDep === 'Delhi' && searchDest === 'Manali'
+                          ? 'bg-red-600 text-white font-black shadow-md'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Delhi &rarr; Manali
+                    </button>
+                    <button
+                      onClick={() => handleSearch('Mumbai', 'Goa')}
+                      className={`px-3.5 py-1.5 rounded-full transition cursor-pointer shrink-0 ${
+                        displayedTripsFilter === 'ROUTE' && searchDep === 'Mumbai' && searchDest === 'Goa'
+                          ? 'bg-red-600 text-white font-black shadow-md'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Mumbai &rarr; Goa
+                    </button>
                   </div>
                 </div>
 
-                {/* Trips Grid */}
+                {/* Trips Grid displaying rich TripCards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {searchResult.matchingTrips.map((trip) => (
+                  {tripsToDisplay.map((trip) => (
                     <TripCard
                       key={trip.id}
                       trip={trip}
